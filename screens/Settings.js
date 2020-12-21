@@ -213,7 +213,7 @@ export default class Settings extends React.Component {
               <TouchableOpacity
                 style={styles.button}
               >
-                <Text style={styles.buttonText} onPress={(loginModal) => this.setState({ loginModal: false })}> OK </Text>
+                <Text style={styles.buttonText} onPress={(loginModal) => this.setState({ loginModal: false })}> 💯 </Text>
               </TouchableOpacity>
       </FancyAlert>
       <LoadingIndicator visible={this.state.isLoading} />

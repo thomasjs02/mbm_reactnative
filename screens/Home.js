@@ -1,15 +1,11 @@
 import React from 'react';
 import { TouchableWithoutFeedback, View, TouchableOpacity, StyleSheet, TextInput, Dimensions, ScrollView, Image, ImageBackground, Platform } from 'react-native';
-import { Button, Block, Text, Icon, theme } from 'galio-framework';
-import { Select } from '../components/';
-import ModalDropdown from 'react-native-modal-dropdown';
-import * as SecureStore from 'expo-secure-store';
+import { Button, Block, Text, theme } from 'galio-framework';
+import Icon from './../components/Icon';
+import { TextInputMask } from 'react-native-masked-text'
 
 import { Images, materialTheme } from '../constants';
 import { HeaderHeight } from "../constants/utils";
-import DateTimePicker from '@react-native-community/datetimepicker';
-import CalendarPicker from 'react-native-calendar-picker';
-import moment from "moment";
 
 const { width, height } = Dimensions.get('screen');
 const thumbMeasure = (width - 48 - 32) / 3;
@@ -19,37 +15,9 @@ export default class Profile extends React.Component {
     super(props);
     this.state = {
       hourValue: 1,
-      selectedStartDate: null,
-      selectedTime: new Date(),
-      timePicker: true,
     };
-    this.onDateChange = this.onDateChange.bind(this);
   }
 
-  onDateChange(date) {
-    this.setState({
-      selectedStartDate: date,
-      timePicker: true,
-    });
-  }
-  onTimeChange = (event, selectedDate) => {
-    const currentDate = selectedDate || new Date();
-    this.setState({
-      selectedTime: selectedDate,
-    });
-    // const start_time = moment(currentDate).format('hh:mm A');
-    // const end_time = moment(currentDate).add(2, 'hours').format('hh:mm A');
-    // console.log(start_time + ' - ' + end_time);
-    // setShow(Platform.OS === 'ios');
-    // setDate(currentDate);
-  };
-
-  handleOnSelect = (index, value) => {
-    const { onSelect } = this.props;
-
-    this.setState({ hourValue: value });
-    onSelect && onSelect(index, value);
-  }
 
   renderWelcome = (user) => {
     return (
@@ -69,6 +37,26 @@ export default class Profile extends React.Component {
               </Block>
             </TouchableWithoutFeedback>
           </Block>
+
+
+
+        </Block>
+
+        <Block center>
+          <Block row style={styles.tabs}>
+            <Button shadowless style={[styles.tab, styles.divider]} onPress={() => navigation.navigate('Pro')}>
+              <Block row middle>
+                <Icon name="grid" family="feather" style={{ paddingRight: 8 }} />
+                <Text size={16} style={styles.tabTitle}>Booking</Text>
+              </Block>
+            </Button>
+            <Button shadowless style={styles.tab} onPress={() => navigation.navigate('Pro')}>
+              <Block row middle>
+                <Icon size={16} name="camera-18" family="GalioExtra" style={{ paddingRight: 8 }} />
+                <Text size={16} style={styles.tabTitle}>Messages</Text>
+              </Block>
+            </Button>
+          </Block>
         </Block>
       </Block>
     )
@@ -80,7 +68,7 @@ export default class Profile extends React.Component {
         <Block row space="between" style={{ padding: theme.SIZES.BASE, }}>
           <Block middle>
             <Text bold size={12} style={{ marginBottom: 8 }}>0</Text>
-            <Text muted size={12}>Sessions</Text>
+            <Text muted size={12}>Bookings</Text>
           </Block>
           <Block middle>
             <Text bold size={12} style={{ marginBottom: 8 }}>0</Text>
@@ -119,80 +107,16 @@ export default class Profile extends React.Component {
     )
   }
 
-  renderBooking = () => {
-    const { selectedStartDate } = this.state;
-    const startDate = selectedStartDate ? moment(selectedStartDate.toString()).format('MM/DD/YYYY') : '';
-    // const time = selectedStartDate ? moment(selectedStartDate.toString()).format("YYYY-MM-DD'T'HH:mm:ss") : '';
-    const date = new Date();
-    // console.log(selectedStartDate);
-
-    return (
-      <Block flex style={styles.group}>
-        <Block flex center>
-          <Text h4 style={{ marginBottom: theme.SIZES.BASE / 2 }}>Book Studio Time</Text>
-          <Text muted>Select a date on the calendar to book a session</Text>
-        </Block>
-        <Block style={styles.title}>
-          <CalendarPicker
-            onDateChange={this.onDateChange}
-          />
-        </Block>
-        {this.state.timePicker && (
-        <View>
-          <Block flex center>
-          <Text style={{ marginBottom: theme.SIZES.BASE / 2 }}>
-            Select the time you want to start your session on {startDate}
-          </Text>
-          </Block>
-          <DateTimePicker
-            testID="dateTimePicker"
-            value={this.state.selectedTime}
-            mode='time'
-            onChange={this.onTimeChange}
-            is24Hour={false}
-            display="default"
-          />
-          <Block row space="evenly">
-            <Block flex left style={{marginTop: 8, marginLeft: 15}}>
-              <Text style={{ marginBottom: theme.SIZES.BASE / 2 }}>
-                How many studio hours?
-              </Text>
-              <ModalDropdown
-                options={[1, 2, 3, 4, 5]}
-                style={[styles.qty, styles.shadow]}
-                onSelect={this.handleOnSelect}
-                dropdownStyle={styles.dropdown}
-                dropdownTextStyle={{paddingLeft:16, fontSize:12}}>
-                <Block flex row middle space="between">
-                  <Text size={12}>{this.state.hourValue}</Text>
-                  <Icon name="angle-down" family="font-awesome" size={11} />
-                </Block>
-              </ModalDropdown>
-            </Block>
-            <Block flex={1.25} right>
-              <Button onPress={this.__submitBookingForm}
-                center
-                shadowless
-                color={materialTheme.COLORS.PRIMARY}
-                textStyle={styles.optionsText}
-                style={[styles.optionsButton, styles.shadow]}>
-                  BOOK SESSION
-              </Button>
-            </Block>
-          </Block>
-        </View>
-        )}
-      </Block>
-    )
-  }
 
   renderSocial = () => {
     return (
       <Block flex style={styles.group}>
-        <Text bold size={16} style={styles.title}>
-          Connect With Us
-        </Text>
         <Block style={{ paddingHorizontal: theme.SIZES.BASE }}>
+          <Block center>
+            <Text bold size={16} style={styles.title}>
+              Social
+            </Text>
+          </Block>
           <Block row center space="between">
             <Block flex middle right>
               <Button
@@ -211,17 +135,17 @@ export default class Profile extends React.Component {
               <TouchableOpacity
                 style={styles.button}
               >
-              <Button
-                round
-                onlyIcon
-                shadowless
-                icon="youtube"
-                iconFamily="font-awesome"
-                iconColor={theme.COLORS.WHITE}
-                iconSize={theme.SIZES.BASE * 1.625}
-                color={theme.COLORS.YOUTUBE}
-                style={[styles.social, styles.shadow]}
-              />
+                <Button
+                  round
+                  onlyIcon
+                  shadowless
+                  icon="youtube"
+                  iconFamily="font-awesome"
+                  iconColor={theme.COLORS.WHITE}
+                  iconSize={theme.SIZES.BASE * 1.625}
+                  color={theme.COLORS.YOUTUBE}
+                  style={[styles.social, styles.shadow]}
+                />
               </TouchableOpacity>
             </Block>
           </Block>
@@ -230,55 +154,76 @@ export default class Profile extends React.Component {
     )
   }
 
-  __submitBookingForm = async () => {
-    let user = this.props.route.params.userData;
-    let hour = this.state.hourValue;
-    let booking_date = moment(this.state.selectedStartDate).format('MM/DD/YYYY');
-    let booking_time_start = moment(this.state.selectedTime).format('hh:mm A');
-    let booking_time_end = moment(this.state.selectedTime).add(hour, 'hours').format('hh:mm A');
-    let subject = 'Booking request from MBM app';
-    let description = 'Booking request from MBM app...';
-    var id = user.id
-    var token = user.token
-    console.log('token: '+token);
-    fetch("http://www.mbmheadquarters.com/admin/api/booking.php", {
-      method: 'POST',
-      headers: new Headers({
-                'Content-Type': 'application/x-www-form-urlencoded', // <-- Specifying the Content-Type
-        }),
-      body: "id="+id+"&token=" +token+"&subject=" +subject+"&start_date=" +booking_date+"&end_date=" +booking_date+"&start_time=" +booking_time_start+"&end_time="+booking_time_end+"&description="+description
-    })
-    .then((response) => response.text())
-    .then((responseJson) => {
-      if(responseJson){
-        alert("Your session has been booked!");
-        // this.setState({
-        //   loginModal: true,
-        //   isLoading: false,
-        // });
-      }else{
-        alert("Please login to your account to continue.")
-        const credentials = SecureStore.deleteItemAsync('kwagu_key');
-      }
-    })
-    .catch((error) => {
-        console.error(error);
-    });
-
+  renderForm = () => {
+    return (
+      <Block style={styles.container}>
+        <TextInput
+          value={this.state.first_name}
+          keyboardType='default'
+          onChangeText={(first_name) => this.setState({ first_name })}
+          placeholder='First Name'
+          placeholderTextColor='#333333'
+          style={styles.input}
+        />
+        <TextInput
+          value={this.state.last_name}
+          keyboardType='default'
+          onChangeText={(last_name) => this.setState({ last_name })}
+          placeholder='Last Name'
+          placeholderTextColor='#333333'
+          style={styles.input}
+        />
+        <TextInput
+          value={this.state.email}
+          keyboardType='email-address'
+          onChangeText={(email) => this.setState({ email })}
+          placeholder='Email'
+          placeholderTextColor='#333333'
+          style={styles.input}
+        />
+        <TextInputMask
+          type={'custom'}
+          options={{
+            mask: '(999) 999-9999'
+          }}
+          value={this.state.phone}
+          onChangeText={text => {
+            this.setState({
+              phone: text
+            })
+          }}
+        />
+        <TextInput
+          value={this.state.phone}
+          keyboardType='phone-pad'
+          onChangeText={(phone) => this.setState({ phone })}
+          placeholder='Phone #'
+          placeholderTextColor='#333333'
+          style={styles.input}
+        />
+        <TouchableOpacity
+          style={styles.button}
+        >
+          <Text style={styles.buttonText} onPress={this.__submitProfileForm}> Save </Text>
+        </TouchableOpacity>
+      </Block>
+    )
   }
+
   render() {
 
     let userData = this.props.route.params.userData;
     return (
-      <Block flex center>
+      <Block flex center style={{ marginBottom: 60 }}>
         <ScrollView
           style={styles.components}
           showsVerticalScrollIndicator={false}>
           {this.renderWelcome(userData)}
-          {this.renderBooking(userData)}
-          {/* {this.renderTabs()} */}
-          {/* {this.renderButtons()} */}
-          {/* {this.renderSocial()} */}
+          {this.renderTabs()}
+          {/* {this.renderForm()} */}
+          {this.renderButtons()}
+          {this.renderSocial()}
+
         </ScrollView>
       </Block>
     );
@@ -416,14 +361,6 @@ const styles = StyleSheet.create({
     marginHorizontal: theme.SIZES.BASE / 2,
     marginTop: -16,
   },
-  horizontalImage: {
-    height: 122,
-    width: 'auto',
-  },
-  fullImage: {
-    height: 215,
-    width: width - theme.SIZES.BASE * 3,
-  },
   shadow: {
     shadowColor: theme.COLORS.BLACK,
     shadowOffset: { width: 0, height: 2 },
@@ -431,21 +368,25 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     elevation: 2,
   },
-  qty: {
-    width: 100,
-    backgroundColor: '#DCDCDC',
-    paddingHorizontal: 16,
-    paddingTop: 10,
-    paddingBottom:9.5,
-    borderRadius: 3,
-    shadowColor: "rgba(0, 0, 0, 0.1)",
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-    shadowOpacity: 1,
+  divider: {
+    borderRightWidth: 0.3,
+    borderRightColor: theme.COLORS.MUTED,
   },
-  dropdown: {
-    marginTop: 8,
-    marginLeft: -16,
-    width: 100,
+  tabs: {
+    marginBottom: 24,
+    marginTop: 10,
+    elevation: 4,
+  },
+  tab: {
+    backgroundColor: theme.COLORS.TRANSPARENT,
+    width: width * 0.50,
+    borderRadius: 0,
+    borderWidth: 0,
+    height: 24,
+    elevation: 0,
+  },
+  tabTitle: {
+    lineHeight: 19,
+    fontWeight: '300'
   },
 });

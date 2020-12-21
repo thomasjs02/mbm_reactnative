@@ -11,10 +11,10 @@ import LoginScreen from '../screens/Login';
 import RegisterScreen from '../screens/Register';
 import ServicesScreen from '../screens/Shop';
 import BookingScreen from '../screens/Booking';
+import ContactScreen from '../screens/Contact';
 import ItemScreen from '../screens/Item';
 import OnboardingScreen from '../screens/Onboarding';
 import ProfileScreen from '../screens/Profile';
-import ProScreen from '../screens/Pro';
 import SettingsScreen from '../screens/Settings';
 
 import CustomDrawerContent from './Menu';
@@ -114,8 +114,8 @@ function HomeStack(props) {
         }}
       />
       <Stack.Screen 
-        name="Pro"
-        component={ProScreen}
+        name="Contact"
+        component={ContactScreen}
         options={{
           header: ({ navigation, scene }) => (
             <Header back white transparent title="" navigation={navigation} scene={scene} />
@@ -128,17 +128,43 @@ function HomeStack(props) {
 }
 
 function BookingStack(props) {
+  let user = props.route.params.userData;
   return (
     <Stack.Navigator mode="card" headerMode="screen">
       <Stack.Screen 
         name="Booking"
         component={BookingScreen}
+        initialParams={{userData: user}}
         options={{
           header: ({ navigation, scene }) => (
             <Header 
               // search
               // tabs
               title="Booking"
+              navigation={navigation}
+              scene={scene}
+            />
+          )
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function ContactStack(props) {
+  let user = props.route.params.userData;
+  return (
+    <Stack.Navigator mode="card" headerMode="screen">
+      <Stack.Screen 
+        name="Contact"
+        component={ContactScreen}
+        initialParams={{userData: user}}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header 
+              // search
+              // tabs
+              title="Contact"
               navigation={navigation}
               scene={scene}
             />
@@ -167,16 +193,6 @@ function ServicesStack(props) {
           )
         }}
       />
-      <Stack.Screen 
-        name="Pro"
-        component={ProScreen}
-        options={{
-          header: ({ navigation, scene }) => (
-            <Header back white transparent title="" navigation={navigation} scene={scene} />
-          ),
-          headerTransparent: true
-        }}
-      />
     </Stack.Navigator>
   );
 }
@@ -198,16 +214,6 @@ function ItemStack(props) {
               scene={scene}
             />
           )
-        }}
-      />
-      <Stack.Screen 
-        name="Pro"
-        component={ProScreen}
-        options={{
-          header: ({ navigation, scene }) => (
-            <Header back white transparent title="" navigation={navigation} scene={scene} />
-          ),
-          headerTransparent: true
         }}
       />
     </Stack.Navigator>
@@ -244,16 +250,6 @@ function RegisterStack(props) {
               scene={scene}
             />
           )
-        }}
-      />
-      <Stack.Screen 
-        name="Pro"
-        component={ProScreen}
-        options={{
-          header: ({ navigation, scene }) => (
-            <Header back white transparent title="" navigation={navigation} scene={scene} />
-          ),
-          headerTransparent: true
         }}
       />
     </Stack.Navigator>
@@ -314,6 +310,22 @@ if(props.route.params.user){
       <Drawer.Screen
         name="Booking"
         component={BookingStack}
+        initialParams={{userData: userData}}
+        options={{
+          drawerIcon: ({ focused }) => (
+            <Icon
+              size={16}
+              name="grid-on"
+              family="material"
+              color={focused ? "white" : materialTheme.COLORS.MUTED}
+            />
+          )
+        }}
+      />
+      <Drawer.Screen
+        name="Contact"
+        component={ContactStack}
+        initialParams={{userData: userData}}
         options={{
           drawerIcon: ({ focused }) => (
             <Icon
