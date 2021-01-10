@@ -2,6 +2,7 @@ import React from 'react';
 import { Easing, Animated, Dimensions } from 'react-native';
 import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
+import * as SecureStore from 'expo-secure-store';
 
 import { Block, Text, theme } from "galio-framework";
 
@@ -93,14 +94,31 @@ function ComponentsStack(props) {
   );
 }
 
-function HomeStack(props) {
-  let user = props.route.params.userData;
+function LogoutStack(props) {
+  // console.log('logout');
+  const credentials = SecureStore.deleteItemAsync('kwagu_key');
   return (
-    <Stack.Navigator user={user} mode="card" headerMode="screen">
+    <Stack.Navigator mode="card" headerMode="none">
+      <Stack.Screen
+        name="Onboarding"
+        component={OnboardingScreen}
+        option={{
+          headerTransparent: true
+        }}
+      />
+      <Stack.Screen name="App" userdata={props} component={AppStack} />
+      <Stack.Screen name="Login" component={LoginStack} />
+      <Stack.Screen name="Register" component={RegisterStack} />
+    </Stack.Navigator>
+  );
+}
+
+function HomeStack(props) {
+  return (
+    <Stack.Navigator mode="card" headerMode="screen">
       <Stack.Screen 
         name="Home"
         component={HomeScreen}
-        initialParams={{userData: user}}
         options={{
           header: ({ navigation, scene }) => (
             <Header 
@@ -118,7 +136,14 @@ function HomeStack(props) {
         component={ContactScreen}
         options={{
           header: ({ navigation, scene }) => (
-            <Header back white transparent title="" navigation={navigation} scene={scene} />
+            <Header 
+              // search
+              // tabs
+              back={true}
+              title="Contact MBM"
+              navigation={navigation}
+              scene={scene}
+            />
           ),
           headerTransparent: true
         }}
@@ -128,13 +153,11 @@ function HomeStack(props) {
 }
 
 function BookingStack(props) {
-  let user = props.route.params.userData;
   return (
     <Stack.Navigator mode="card" headerMode="screen">
       <Stack.Screen 
         name="Booking"
         component={BookingScreen}
-        initialParams={{userData: user}}
         options={{
           header: ({ navigation, scene }) => (
             <Header 
@@ -152,18 +175,17 @@ function BookingStack(props) {
 }
 
 function ContactStack(props) {
-  let user = props.route.params.userData;
   return (
     <Stack.Navigator mode="card" headerMode="screen">
       <Stack.Screen 
         name="Contact"
         component={ContactScreen}
-        initialParams={{userData: user}}
         options={{
           header: ({ navigation, scene }) => (
             <Header 
               // search
               // tabs
+              back={true}
               title="Contact"
               navigation={navigation}
               scene={scene}
@@ -226,13 +248,11 @@ function LoginStack(props) {
       <Stack.Screen 
         name="Login"
         component={LoginScreen}
-        initialParams={{item: props}}
       />
       <Stack.Screen name="MBM" component={AppStack} />
     </Stack.Navigator>
   );
 }
-
 
 function RegisterStack(props) {
   return (
@@ -257,16 +277,14 @@ function RegisterStack(props) {
 }
 
 function AppStack(props) {
-let userData = [];
-if(props.route.params.user){
-  userData = props.route.params.user;
-}
 
+  // console.log('props');
+  // console.log(props);
   return (
     <Drawer.Navigator
       style={{ flex: 1 }}
       drawerContent={props => (
-        <CustomDrawerContent {...props} profile={profile} user={userData} />
+        <CustomDrawerContent {...props} profile={profile} />
       )}
       drawerStyle={{
         backgroundColor: "white",
@@ -296,7 +314,6 @@ if(props.route.params.user){
       <Drawer.Screen
         name="Home"
         component={HomeStack}
-        initialParams={{userData: userData}}
         options={{ drawerIcon: ({ focused }) => (
             <Icon
               size={16}
@@ -308,9 +325,21 @@ if(props.route.params.user){
         }}
       />
       <Drawer.Screen
+        name="Logout"
+        component={LogoutStack}
+        options={{ drawerIcon: ({ focused }) => (
+            <Icon
+              size={16}
+              name="logout"
+              family="GalioExtra"
+              color={focused ? "white" : materialTheme.COLORS.MUTED}
+            />
+          )
+        }}
+      />
+      <Drawer.Screen
         name="Booking"
         component={BookingStack}
-        initialParams={{userData: userData}}
         options={{
           drawerIcon: ({ focused }) => (
             <Icon
@@ -325,7 +354,6 @@ if(props.route.params.user){
       <Drawer.Screen
         name="Contact"
         component={ContactStack}
-        initialParams={{userData: userData}}
         options={{
           drawerIcon: ({ focused }) => (
             <Icon
@@ -382,7 +410,7 @@ if(props.route.params.user){
       <Drawer.Screen
         name="Settings"
         component={SettingsStack}
-        initialParams={{userData: userData}}
+        // initialParams={{userData: userData}}
         options={{
           drawerIcon: ({ focused }) => (
             <Icon

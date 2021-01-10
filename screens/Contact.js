@@ -1,104 +1,118 @@
-import React from 'react';
-import {
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  ImageBackground,
-  Dimensions
-} from 'react-native';
-import { Button, Block, Text, Input, theme } from 'galio-framework';
+import React, { Component } from 'react';
+import { GiftedChat } from 'react-native-gifted-chat';
+import { View, ImageBackground, Dimensions } from 'react-native';
+import { Block } from 'galio-framework';
+import * as SecureStore from 'expo-secure-store';
+const { height, width } = Dimensions.get('screen');
 
-import { materialTheme, products, Images } from '../constants';
-import { Select, Icon, Header, Product, Switch } from '../components';
-
-const { width } = Dimensions.get('screen');
-
-const thumbMeasure = (width - 48 - 32) / 3;
-
-export default class Contact extends React.Component {
+export default class Example extends Component {
   state = {
-    'switch-1': true,
+    messages: [],
+    user: [],
   };
+
+  async componentDidMount() {
+    try {
+      const credentials = await SecureStore.getItemAsync('kwagu_key');
+      if (credentials) {
+        const myJson = JSON.parse(credentials);
+        this.setState({
+          user: myJson,
+        });
+        // console.log('user');
+        // console.log(myJson);
+        fetch("http://www.mbmheadquarters.com/admin/api/mail.php", {
+          method: 'POST',
+          headers: new Headers({
+            'Content-Type': 'application/x-www-form-urlencoded', // <-- Specifying the Content-Type
+          }),
+          body: "id=" + myJson.id + "&token=" + myJson.token // <-- Post parameters
+        })
+          .then((response) => response.json())
+          .then((responseJson) => {
+            console.log('json');
+            console.log(responseJson);
+            if (responseJson) {
+              var i2 = 0;
+              var msg = [];
+              for (var i = 0; i < responseJson.length; i++) {
+                if (responseJson[i].type == 'contact') {
+                  if (responseJson[i].note) {
+                    msg[i2] = {
+                      _id: i2,
+                      text: responseJson[i].note,
+                      createdAt: responseJson[i].date,
+                      user: {
+                        _id: 1,
+                        name: 'MBM',
+                        avatar: 'http://mbmheadquarters.com/template/assets/images/logo-2.png',
+                      }
+                    }
+                    i2++;
+                  }
+                  msg[i2] = {
+                    _id: i2,
+                    text: responseJson[i].message,
+                    createdAt: responseJson[i].date,
+                    user: {
+                      _id: 0,
+                      name: responseJson[i].first_name + ' ' + responseJson[i].last_name,
+                      avatar: 'https://facebook.github.io/react/img/logo_og.png',
+                    }
+                  }
+                  i2++;
+                }
+              }
+              this.setState({ messages: msg });
+            } else {
+              alert('Messaging not working temporarily.')
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  onSend(messages = []) {
+    var msg = messages[0].text;
+    console.log('id: ' + this.state.user.id);
+    console.log('token: ' + this.state.user.token);
+    fetch("http://www.mbmheadquarters.com/admin/api/contact.php", {
+      method: 'POST',
+      headers: new Headers({
+                'Content-Type': 'application/x-www-form-urlencoded', // <-- Specifying the Content-Type
+        }),
+      body: "id="+this.state.user.id+"&token=" +this.state.user.token+"&message=" +msg
+    })
+    .then((response) => response.text())
+    .then((responseJson) => {
+      if(responseJson){
+        // alert("Your session has been booked!");
+        this.setState((previousState) => ({
+          messages: GiftedChat.append(previousState.messages, messages),
+        }));
+      }else{
+        alert("The chat is not working momentarily.");
+      }
+    })
+    .catch((error) => {
+        console.error(error);
+    });
+  }
 
   render() {
     return (
-      <Block flex center>
-        <ScrollView
-          style={styles.components}
-          showsVerticalScrollIndicator={false}>
-            <Text>Starter template</Text>
-        </ScrollView>
-      </Block>
+      <GiftedChat
+        messages={this.state.messages}
+        onSend={(messages) => this.onSend(messages)}
+        user={{
+          _id: 0,
+        }}
+      />
     );
   }
 }
-
-const styles = StyleSheet.create({
-  components: {
-    width: width
-  },
-  title: {
-    paddingVertical: theme.SIZES.BASE,
-    paddingHorizontal: theme.SIZES.BASE * 2,
-  },
-  group: {
-    paddingTop: theme.SIZES.BASE * 3.75,
-  },
-  shadow: {
-    shadowColor: 'black',
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-    shadowOpacity: 0.2,
-    elevation: 2,
-  },
-  button: {
-    marginBottom: theme.SIZES.BASE,
-    width: width - (theme.SIZES.BASE * 2),
-  },
-  optionsText: {
-    fontSize: theme.SIZES.BASE * 0.75,
-    color: '#4A4A4A',
-    fontWeight: "normal",
-    fontStyle: "normal",
-    letterSpacing: -0.29,
-  },
-  optionsButton: {
-    width: 'auto',
-    height: 34,
-    paddingHorizontal: theme.SIZES.BASE,
-    paddingVertical: 10,
-  },
-  imageBlock: {
-    overflow: 'hidden',
-    borderRadius: 4,
-  },
-  rows: {
-    height: theme.SIZES.BASE * 2,
-  },
-  social: {
-    width: theme.SIZES.BASE * 3.5,
-    height: theme.SIZES.BASE * 3.5,
-    borderRadius: theme.SIZES.BASE * 1.75,
-    justifyContent: 'center',
-  },
-  category: {
-    backgroundColor: theme.COLORS.WHITE,
-    marginVertical: theme.SIZES.BASE / 2,
-    borderWidth: 0,
-  },
-  categoryTitle: {
-    height: '100%',
-    paddingHorizontal: theme.SIZES.BASE,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  albumThumb: {
-    borderRadius: 4,
-    marginVertical: 4,
-    alignSelf: 'center',
-    width: thumbMeasure,
-    height: thumbMeasure
-  },
-});

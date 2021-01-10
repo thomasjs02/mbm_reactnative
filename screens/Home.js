@@ -2,65 +2,36 @@ import React from 'react';
 import { TouchableWithoutFeedback, View, TouchableOpacity, StyleSheet, TextInput, Dimensions, ScrollView, Image, ImageBackground, Platform } from 'react-native';
 import { Button, Block, Text, theme } from 'galio-framework';
 import Icon from './../components/Icon';
-import { TextInputMask } from 'react-native-masked-text'
+import Welcome from './../components/Welcome';
 
-import { Images, materialTheme } from '../constants';
+import { materialTheme } from '../constants';
 import { HeaderHeight } from "../constants/utils";
+import * as SecureStore from 'expo-secure-store';
 
 const { width, height } = Dimensions.get('screen');
 const thumbMeasure = (width - 48 - 32) / 3;
 
 export default class Profile extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      hourValue: 1,
-    };
+
+  state = {
+    user: [],
   }
 
+  async componentDidMount() {
+    try {
+      const credentials = await SecureStore.getItemAsync('kwagu_key');
+      if (credentials) {
+        const myJson = JSON.parse(credentials);
+        this.setState({
+          user: myJson,
+        });
+        // console.log(myJson);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
-  renderWelcome = (user) => {
-    return (
-      <Block flex>
-        <Block style={{ paddingHorizontal: theme.SIZES.BASE }}>
-          <Block row='horizontal' card flex style={[styles.product, styles.shadow]}>
-            <TouchableWithoutFeedback onPress={() => navigation.navigate('Item', { user_id: 43 })}>
-              <Block flex style={[styles.imageContainer, styles.shadow]}>
-                <Image source={require('./../assets/images/ios.png')} style='full' />
-              </Block>
-            </TouchableWithoutFeedback>
-            <TouchableWithoutFeedback onPress={() => navigation.navigate('Item', { user_id: 43 })}>
-              <Block flex space="between" style={styles.productDescription}>
-                <Text size={15} style={styles.productTitle}>Welcome {user.first_name}</Text>
-                <Text size={14}>MBM Headquarters</Text>
-                <Text size={12} muted={!materialTheme.COLORS.PRIMARY} color={materialTheme.COLORS.PRIMARY}>Professional Recording Studio</Text>
-              </Block>
-            </TouchableWithoutFeedback>
-          </Block>
-
-
-
-        </Block>
-
-        <Block center>
-          <Block row style={styles.tabs}>
-            <Button shadowless style={[styles.tab, styles.divider]} onPress={() => navigation.navigate('Pro')}>
-              <Block row middle>
-                <Icon name="grid" family="feather" style={{ paddingRight: 8 }} />
-                <Text size={16} style={styles.tabTitle}>Booking</Text>
-              </Block>
-            </Button>
-            <Button shadowless style={styles.tab} onPress={() => navigation.navigate('Pro')}>
-              <Block row middle>
-                <Icon size={16} name="camera-18" family="GalioExtra" style={{ paddingRight: 8 }} />
-                <Text size={16} style={styles.tabTitle}>Messages</Text>
-              </Block>
-            </Button>
-          </Block>
-        </Block>
-      </Block>
-    )
-  }
 
   renderTabs = () => {
     return (
@@ -154,73 +125,14 @@ export default class Profile extends React.Component {
     )
   }
 
-  renderForm = () => {
-    return (
-      <Block style={styles.container}>
-        <TextInput
-          value={this.state.first_name}
-          keyboardType='default'
-          onChangeText={(first_name) => this.setState({ first_name })}
-          placeholder='First Name'
-          placeholderTextColor='#333333'
-          style={styles.input}
-        />
-        <TextInput
-          value={this.state.last_name}
-          keyboardType='default'
-          onChangeText={(last_name) => this.setState({ last_name })}
-          placeholder='Last Name'
-          placeholderTextColor='#333333'
-          style={styles.input}
-        />
-        <TextInput
-          value={this.state.email}
-          keyboardType='email-address'
-          onChangeText={(email) => this.setState({ email })}
-          placeholder='Email'
-          placeholderTextColor='#333333'
-          style={styles.input}
-        />
-        <TextInputMask
-          type={'custom'}
-          options={{
-            mask: '(999) 999-9999'
-          }}
-          value={this.state.phone}
-          onChangeText={text => {
-            this.setState({
-              phone: text
-            })
-          }}
-        />
-        <TextInput
-          value={this.state.phone}
-          keyboardType='phone-pad'
-          onChangeText={(phone) => this.setState({ phone })}
-          placeholder='Phone #'
-          placeholderTextColor='#333333'
-          style={styles.input}
-        />
-        <TouchableOpacity
-          style={styles.button}
-        >
-          <Text style={styles.buttonText} onPress={this.__submitProfileForm}> Save </Text>
-        </TouchableOpacity>
-      </Block>
-    )
-  }
-
   render() {
-
-    let userData = this.props.route.params.userData;
     return (
       <Block flex center style={{ marginBottom: 60 }}>
         <ScrollView
           style={styles.components}
           showsVerticalScrollIndicator={false}>
-          {this.renderWelcome(userData)}
+          <Welcome user={this.state.user} />
           {this.renderTabs()}
-          {/* {this.renderForm()} */}
           {this.renderButtons()}
           {this.renderSocial()}
 
@@ -245,28 +157,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  profile: {
-    marginTop: Platform.OS === 'android' ? -HeaderHeight : 0,
-    marginBottom: -HeaderHeight * 2,
-  },
-  profileImage: {
-    width: width * 1.1,
-    height: 'auto',
-  },
-  profileContainer: {
-    width: width,
-    height: height / 2,
-  },
-  profileDetails: {
-    paddingTop: theme.SIZES.BASE * 4,
-    justifyContent: 'flex-end',
-    position: 'relative',
-  },
-  profileTexts: {
-    paddingHorizontal: theme.SIZES.BASE * 2,
-    paddingVertical: theme.SIZES.BASE * 2,
-    zIndex: 2
   },
   pro: {
     backgroundColor: materialTheme.COLORS.LABEL,

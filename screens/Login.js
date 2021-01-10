@@ -4,16 +4,8 @@ import { Button, Block, Input, theme } from 'galio-framework';
 // import { SecureStore } from 'expo';
 import * as SecureStore from 'expo-secure-store';
 import index from "./../src/js/index";
-import { dataUser } from './../src/js/actions';
-
-import { Icon, Product } from '../components';
 
 const { height, width } = Dimensions.get('screen');
-import products from '../constants/products';
-
-const setToken = (token) => {
-  return SecureStore.setItemAsync('secure_token', token);
-};
 
 export default class Login extends React.Component {
 
@@ -22,6 +14,7 @@ export default class Login extends React.Component {
     email: '',
     password: '',
   }
+
 
   storeData = async (credentials) => {
     try {
@@ -35,42 +28,42 @@ export default class Login extends React.Component {
     }
   }
 
-  __submitLoginForm = async (navigation) => {
+  __submitLoginForm = async () => {
+    let nav = this.props.navigation;
     var token = this.state.token;
     var email = this.state.email;
     var password = this.state.password;
     fetch("http://www.mbmheadquarters.com/admin/json/user-auth.php", {
       method: 'POST',
       headers: new Headers({
-                'Content-Type': 'application/x-www-form-urlencoded', // <-- Specifying the Content-Type
-        }),
-      body: "email="+email+"&password=" + password // <-- Post parameters
+        'Content-Type': 'application/x-www-form-urlencoded', // <-- Specifying the Content-Type
+      }),
+      body: "email=" + email + "&password=" + password // <-- Post parameters
     })
-    .then((response) => response.json())
-    .then((responseJson) => {
-      if(responseJson){
-        console.log(responseJson);
-        const id = responseJson.id;
-        const token = responseJson.token;
-        const first_name = responseJson.first_name;
-        const last_name = responseJson.last_name;
-        const phone = responseJson.phone;
-        const credentials = { id, token, email, password, first_name, last_name, phone };
-        this.storeData(credentials);
-        navigation.navigate('MBM');
+      .then((response) => response.json())
+      .then((responseJson) => {
+        if (responseJson) {
+          console.log(responseJson);
+          const id = responseJson.id;
+          const token = responseJson.token;
+          const first_name = responseJson.first_name;
+          const last_name = responseJson.last_name;
+          const phone = responseJson.phone;
+          const credentials = { id, token, email, password, first_name, last_name, phone };
+          this.storeData(credentials);
+          nav.navigate('MBM');
 
-      }else{
-        alert('Incorrect login')
-      }
-    })
-    .catch((error) => {
+        } else {
+          alert('Incorrect login')
+        }
+      })
+      .catch((error) => {
         console.error(error);
-    });
+      });
 
   }
 
   render() {
-        const { navigation } = this.props;
     return (
       <Block style={styles.container}>
         <Text style={styles.titleText}>MBM</Text>
@@ -94,7 +87,7 @@ export default class Login extends React.Component {
         <TouchableOpacity
           style={styles.button}
         >
-          <Text style={styles.buttonText} onPress={this.__submitLoginForm(navigation)}> Login </Text>
+          <Text style={styles.buttonText} onPress={this.__submitLoginForm}> Login </Text>
         </TouchableOpacity>
 
       </Block>

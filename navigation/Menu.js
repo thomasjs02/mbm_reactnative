@@ -24,6 +24,10 @@ function CustomDrawerContent({
     "Settings",
     "Components"
   ];
+    // console.log('start');
+    // console.log(user);
+    // console.log('state');
+    // console.log(state);
   return (
     <Block
       style={styles.container}
@@ -36,7 +40,7 @@ function CustomDrawerContent({
           <Block style={styles.profile}>
             <Image source={{ uri: profile.avatar }} style={styles.avatar} />
             <Text h5 color={"white"}>
-              {user.first_name + ' ' + user.last_name}
+              {/* {user.first_name + ' ' + user.last_name} */}
             </Text>
           </Block>
         </TouchableWithoutFeedback>

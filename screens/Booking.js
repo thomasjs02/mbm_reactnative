@@ -25,11 +25,72 @@ export default class Booking extends React.Component {
       selectedTime: date,
       bookingModal: false,
       isLoading: false,
+      user: [],
+      customDatesStyles: [],
     };
     this.onDateChange = this.onDateChange.bind(this);
   }
 
+  async componentDidMount() {
+
+    try {
+      const credentials = await SecureStore.getItemAsync('kwagu_key');
+      if (credentials) {
+        const myJson = JSON.parse(credentials);
+        this.setState({
+          user: myJson,
+        });
+        fetch("http://www.mbmheadquarters.com/admin/api/event.php", {
+          method: 'POST',
+          headers: new Headers({
+            'Content-Type': 'application/x-www-form-urlencoded', // <-- Specifying the Content-Type
+          }),
+          body: "id=" + myJson.id + "&token=" + myJson.token // <-- Post parameters
+        })
+          .then((response) => response.json())
+          .then((responseJson) => {
+            if (responseJson) {
+              var i2 = 0;
+              let jsonInput = [];
+              for (var i = 0; i < responseJson.length; i++) {
+
+                if (responseJson[i].type == 'booking' && responseJson[i].start_date != 'Invalid date') {
+                  let subject = responseJson[i].subject;
+                  let start_date = responseJson[i].start_date;
+                  let start_time = responseJson[i].start_time;
+                  let startDate = moment(start_date.toString()).format();
+                  let end_time = responseJson[i].end_time;
+                  let description = responseJson[i].description;
+                  // let day = "2021-01-19T06:00:00.000Z";
+                  let style = { backgroundColor: '#' + ('#00000' + (Math.random() * (1 << 24) | 0).toString(16)).slice(-6) };
+                  jsonInput.push({
+                    date: startDate,
+                    style: style,
+                    textStyle: { color: 'black' }, // sets the font color
+                  });
+                }
+              }
+              this.setState({
+                customDatesStyles: jsonInput,
+              });
+            } else {
+              alert('Messaging not working temporarily.')
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      }
+    } catch (e) {
+      console.log(e);
+    }
+
+  };
+
   onDateChange(date) {
+    console.log(date);
+    let data = this.state.customDatesStyles;
+    console.log(data);
     this.setState({
       selectedStartDate: date,
     });
@@ -51,9 +112,16 @@ export default class Booking extends React.Component {
   renderBooking = () => {
     const { selectedStartDate } = this.state;
     const startDate = selectedStartDate ? moment(selectedStartDate.toString()).format('MM/DD/YYYY') : '';
-    // const time = selectedStartDate ? moment(selectedStartDate.toString()).format("YYYY-MM-DD'T'HH:mm:ss") : '';
     const date = new Date();
-    // console.log(selectedStartDate);
+    let custom_input = this.state.customDatesStyles;
+
+    let start_date = moment(this.state.selectedStartDate).format('MM/DD/YYYY');
+    let start_time = moment(this.state.selectedTime).format('hh:mm A');
+    let hour_amount = this.state.hourValue;
+    let hourFrame = 'hours';
+    if (hour_amount == 1) {
+      hourFrame = 'hour';
+    }
 
     return (
       <Block flex style={styles.group}>
@@ -64,14 +132,15 @@ export default class Booking extends React.Component {
         <Block style={styles.title}>
           <CalendarPicker
             onDateChange={this.onDateChange}
+            customDatesStyles={custom_input}
           />
         </Block>
-        <View>
-          <Block flex center>
+        <Block flex center>
           <Text style={{ marginBottom: theme.SIZES.BASE }}>
             Select the time you want to start your session
           </Text>
-          </Block>
+        </Block>
+        <View>
           <DateTimePicker
             testID="dateTimePicker"
             value={this.state.selectedTime}
@@ -81,7 +150,7 @@ export default class Booking extends React.Component {
             display="default"
           />
           <Block row space="evenly">
-            <Block flex left style={{marginTop: 8, marginLeft: 15}}>
+            <Block flex left style={{ marginTop: 8, marginLeft: 15 }}>
               <Text style={{ marginBottom: theme.SIZES.BASE / 2 }}>
                 How many studio hours?
               </Text>
@@ -90,7 +159,7 @@ export default class Booking extends React.Component {
                 style={[styles.qty, styles.shadow]}
                 onSelect={this.handleOnSelect}
                 dropdownStyle={styles.dropdown}
-                dropdownTextStyle={{paddingLeft:16, fontSize:12}}>
+                dropdownTextStyle={{ paddingLeft: 16, fontSize: 12 }}>
                 <Block flex row middle space="between">
                   <Text size={12}>{this.state.hourValue}</Text>
                   <Icon name="angle-down" family="font-awesome" size={11} />
@@ -104,76 +173,14 @@ export default class Booking extends React.Component {
                 color={materialTheme.COLORS.PRIMARY}
                 textStyle={styles.optionsText}
                 style={[styles.optionsButton, styles.shadow]}>
-                  BOOK SESSION
+                BOOK SESSION
               </Button>
             </Block>
           </Block>
         </View>
-      </Block>
-    )
-  }
-
-  __submitBookingForm = async () => {
-    let user = this.props.route.params.userData;
-    let hour = this.state.hourValue;
-    let booking_date = moment(this.state.selectedStartDate).format('MM/DD/YYYY');
-    let booking_time_start = moment(this.state.selectedTime).format('hh:mm A');
-    let booking_time_end = moment(this.state.selectedTime).add(hour, 'hours').format('hh:mm A');
-    let subject = 'Booking request from MBM app';
-    let description = 'Booking request from MBM app...';
-    var id = user.id
-    var token = user.token
-    this.setState({
-      isLoading: true,
-    });
-    console.log('token: '+token);
-    fetch("http://www.mbmheadquarters.com/admin/api/booking.php", {
-      method: 'POST',
-      headers: new Headers({
-                'Content-Type': 'application/x-www-form-urlencoded', // <-- Specifying the Content-Type
-        }),
-      body: "id="+id+"&token=" +token+"&subject=" +subject+"&start_date=" +booking_date+"&end_date=" +booking_date+"&start_time=" +booking_time_start+"&end_time="+booking_time_end+"&description="+description
-    })
-    .then((response) => response.text())
-    .then((responseJson) => {
-      console.log(responseJson);
-      if(responseJson){
-        // alert("Your session has been booked!");
-        this.setState({
-          isLoading: false,
-          bookingModal: true,
-        });
-      }else{
-        alert("Please login to your account to continue.")
-        const credentials = SecureStore.deleteItemAsync('kwagu_key');
-      }
-    })
-    .catch((error) => {
-        console.error(error);
-    });
-
-  }
-
-  render() {
-
-    let userData = this.props.route.params.userData;
-    let start_date = moment(this.state.selectedStartDate).format('MM/DD/YYYY');
-    let start_time = moment(this.state.selectedTime).format('hh:mm A');
-    let hour_amount = this.state.hourValue;
-    let hourFrame = 'hours';
-    if(hour_amount == 1){
-      hourFrame = 'hour';
-    }
-    // console.log(bookingDate);
-    return (
-      <Block flex center style={{ marginBottom: 60 }}>
-        <ScrollView
-          style={styles.components}
-          showsVerticalScrollIndicator={false}>
-          {this.renderBooking(userData)}
-          <FancyAlert
-            visible={this.state.bookingModal}
-            icon={<View style={{
+        <FancyAlert
+          visible={this.state.bookingModal}
+          icon={<View style={{
             flex: 1,
             display: 'flex',
             justifyContent: 'center',
@@ -186,14 +193,71 @@ export default class Booking extends React.Component {
         >
           <Text style={{ marginTop: -16, marginBottom: 32 }}>
             You have booked a session on {start_date} at {start_time} for {hour_amount} {hourFrame}
-            </Text>
-                <TouchableOpacity
-                  style={styles.buttonModal}
-                >
-                  <Text style={styles.buttonText} onPress={(bookingModal) => this.setState({ bookingModal: false })}> 💯 </Text>
-                </TouchableOpacity>
-          </FancyAlert>
-          <LoadingIndicator visible={this.state.isLoading} />
+          </Text>
+          <TouchableOpacity
+            style={styles.buttonModal}
+          >
+            <Text style={styles.buttonText} onPress={(bookingModal) => this.setState({ bookingModal: false })}> 💯 </Text>
+          </TouchableOpacity>
+        </FancyAlert>
+        <LoadingIndicator visible={this.state.isLoading} />
+      </Block>
+    )
+  }
+
+  __submitBookingForm = async () => {
+    let hour = this.state.hourValue;
+    let booking_date = moment(this.state.selectedStartDate).format('MM/DD/YYYY');
+    let booking_time_start = moment(this.state.selectedTime).format('hh:mm A');
+    let booking_time_end = moment(this.state.selectedTime).add(hour, 'hours').format('hh:mm A');
+    let subject = 'Booking request from MBM app';
+    let description = 'Booking request from MBM app...';
+    var id = this.state.user.id
+    var token = this.state.user.token
+    this.setState({
+      isLoading: true,
+    });
+    fetch("http://www.mbmheadquarters.com/admin/api/booking.php", {
+      method: 'POST',
+      headers: new Headers({
+        'Content-Type': 'application/x-www-form-urlencoded', // <-- Specifying the Content-Type
+      }),
+      body: "id=" + id + "&token=" + token + "&subject=" + subject + "&start_date=" + booking_date + "&end_date=" + booking_date + "&start_time=" + booking_time_start + "&end_time=" + booking_time_end + "&description=" + description
+    })
+      .then((response) => response.text())
+      .then((responseJson) => {
+        if (responseJson) {
+          // alert("Your session has been booked!");
+          this.setState({
+            isLoading: false,
+            bookingModal: true,
+          });
+        } else {
+          alert("Please login to your account to continue.")
+          const credentials = SecureStore.deleteItemAsync('kwagu_key');
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
+  }
+
+  render() {
+    return (
+      <Block flex center style={{ marginBottom: 60 }}>
+        <ScrollView
+          style={styles.components}
+          showsVerticalScrollIndicator={false}>
+          {this.state.customDatesStyles.length ? (
+            <Block center>
+              {this.renderBooking()}
+            </Block>
+          ) : (
+              <Block center>
+                <LoadingIndicator visible={true} />
+              </Block>
+            )}
         </ScrollView>
       </Block>
     );
@@ -352,7 +416,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#DCDCDC',
     paddingHorizontal: 16,
     paddingTop: 10,
-    paddingBottom:9.5,
+    paddingBottom: 9.5,
     borderRadius: 3,
     shadowColor: "rgba(0, 0, 0, 0.1)",
     shadowOffset: { width: 0, height: 2 },

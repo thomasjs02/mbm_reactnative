@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "rn-material-kit-free",
+    "name": "mbm-headquarters",
     "description": "React Native - Material Kit Free",
-    "slug": "rn-material-kit-free",
+    "slug": "mbm-headquarters",
     "privacy": "unlisted",
     "sdkVersion": "39.0.0",
     "platforms": [

@@ -1,7 +1,7 @@
 {
-  "name": "rn-material-kit-free",
+  "name": "mbm-headquarters",
   "version": "1.7.0",
-  "description": "Material Kit React Native. Coded by Creative Tim",
+  "description": "Recording studio booking app.",
   "main": "node_modules/expo/AppEntry.js",
   "private": true,
   "scripts": {
@@ -11,6 +11,9 @@
     "ios": "cross-env REACT_EDITOR=code expo start --ios",
     "eject": "expo eject",
     "test": "node ./node_modules/jest/bin/jest.js --watchAll"
+  },
+  "resolutions": {
+    "@react-native-community/cli-debugger-ui": "4.7.0"
   },
   "jest": {
     "preset": "jest-expo"
