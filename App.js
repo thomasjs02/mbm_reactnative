@@ -98,7 +98,7 @@ export default class App extends React.Component {
   _handleFinishLoading = () => {
       // store.dispatch( getData() );
       // this.setState({ isLoadingComplete: true });
-    fetch('http://www.mbmheadquarters.com/admin/json/shop-all.php', {
+    fetch('https://www.mbmheadquarters.com/admin/json/shop-all.php', {
       method: 'POST',
       headers: {
         Accept: 'application/json',

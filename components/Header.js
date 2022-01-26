@@ -53,10 +53,10 @@ class Header extends React.Component {
   renderRight = () => {
     const { white, title, navigation } = this.props;
 
-    if (title === 'Title') {
+    if (title === 'Title' || title === 'Booking' || title === 'Services' || title === 'Settings') {
       return [
         <ChatButton key='chat-title' navigation={navigation} isWhite={white} />,
-        <BasketButton key='basket-title' navigation={navigation} isWhite={white} />
+        // <BasketButton key='basket-title' navigation={navigation} isWhite={white} />
       ]
     }
 

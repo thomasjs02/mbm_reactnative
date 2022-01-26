@@ -3,6 +3,7 @@ import { GiftedChat } from 'react-native-gifted-chat';
 import { View, ImageBackground, Dimensions } from 'react-native';
 import { Block } from 'galio-framework';
 import * as SecureStore from 'expo-secure-store';
+import OnboardingScreen from "./Onboarding";
 const { height, width } = Dimensions.get('screen');
 
 export default class Example extends Component {
@@ -15,13 +16,17 @@ export default class Example extends Component {
     try {
       const credentials = await SecureStore.getItemAsync('kwagu_key');
       if (credentials) {
+        let nav = this.props.navigation;
         const myJson = JSON.parse(credentials);
         this.setState({
           user: myJson,
         });
-        // console.log('user');
-        // console.log(myJson);
-        fetch("http://www.mbmheadquarters.com/admin/api/mail.php", {
+        if(!(myJson.id && myJson.token)){
+          SecureStore.deleteItemAsync('kwagu_key');
+          SecureStore.setItemAsync('kwagu_login', 1);
+          nav.navigate('Login');
+        }
+        fetch("https://www.mbmheadquarters.com/admin/api/mail.php", {
           method: 'POST',
           headers: new Headers({
             'Content-Type': 'application/x-www-form-urlencoded', // <-- Specifying the Content-Type
@@ -30,8 +35,6 @@ export default class Example extends Component {
         })
           .then((response) => response.json())
           .then((responseJson) => {
-            console.log('json');
-            console.log(responseJson);
             if (responseJson) {
               var i2 = 0;
               var msg = [];
@@ -45,7 +48,7 @@ export default class Example extends Component {
                       user: {
                         _id: 1,
                         name: 'MBM',
-                        avatar: 'http://mbmheadquarters.com/template/assets/images/logo-2.png',
+                        avatar: 'https://mbmheadquarters.com/template/assets/images/logo-2.png',
                       }
                     }
                     i2++;
@@ -65,7 +68,9 @@ export default class Example extends Component {
               }
               this.setState({ messages: msg });
             } else {
-              alert('Messaging not working temporarily.')
+              SecureStore.setItemAsync('kwagu_login', 1);
+              SecureStore.deleteItemAsync('kwagu_key');
+              nav.navigate('Login');
             }
           })
           .catch((error) => {
@@ -74,14 +79,15 @@ export default class Example extends Component {
       }
     } catch (e) {
       console.log(e);
+      SecureStore.setItemAsync('kwagu_login', 1);
+      SecureStore.deleteItemAsync('kwagu_key');
+      nav.navigate('Login');
     }
   }
 
   onSend(messages = []) {
     var msg = messages[0].text;
-    console.log('id: ' + this.state.user.id);
-    console.log('token: ' + this.state.user.token);
-    fetch("http://www.mbmheadquarters.com/admin/api/contact.php", {
+    fetch("https://www.mbmheadquarters.com/admin/api/message.php", {
       method: 'POST',
       headers: new Headers({
                 'Content-Type': 'application/x-www-form-urlencoded', // <-- Specifying the Content-Type
@@ -91,12 +97,14 @@ export default class Example extends Component {
     .then((response) => response.text())
     .then((responseJson) => {
       if(responseJson){
-        // alert("Your session has been booked!");
         this.setState((previousState) => ({
           messages: GiftedChat.append(previousState.messages, messages),
         }));
       }else{
-        alert("The chat is not working momentarily.");
+        // SecureStore.setItemAsync('kwagu_login', 1);
+        // SecureStore.deleteItemAsync('kwagu_key');
+        // nav.navigate('Login');
+        // alert("The chat is not working momentarily.");
       }
     })
     .catch((error) => {

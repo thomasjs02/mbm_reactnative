@@ -1,10 +1,10 @@
-const Onboarding = 'http://mbmheadquarters.com/template/assets/images/app/onboarding.png';
-const Pro = 'http://mbmheadquarters.com/template/assets/images/app/pro.png';
+const Onboarding = 'https://mbmheadquarters.com/template/assets/images/app/onboarding.png';
+const Pro = 'https://mbmheadquarters.com/template/assets/images/app/pro.png';
 const Products = {
   'Accessories': 'https://source.unsplash.com//l1MCA0VyNrk/840x840',
 };
 
-const Profile = 'http://mbmheadquarters.com/template/assets/images/app/profile.png';
+const Profile = 'https://mbmheadquarters.com/template/assets/images/app/profile.png';
 const Avatar = 'https://images.unsplash.com/photo-1518725522904-4b3939358342?fit=crop&w=210&q=80';
 
 const Viewed = [

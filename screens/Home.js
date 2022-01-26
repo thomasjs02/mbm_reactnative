@@ -4,9 +4,11 @@ import { Button, Block, Text, theme } from 'galio-framework';
 import Icon from './../components/Icon';
 import Welcome from './../components/Welcome';
 
-import { materialTheme } from '../constants';
+import {Images, materialTheme, overview} from '../constants';
 import { HeaderHeight } from "../constants/utils";
 import * as SecureStore from 'expo-secure-store';
+import moment from "moment";
+import {Overview} from "../components";
 
 const { width, height } = Dimensions.get('screen');
 const thumbMeasure = (width - 48 - 32) / 3;
@@ -25,7 +27,75 @@ export default class Profile extends React.Component {
         this.setState({
           user: myJson,
         });
-        // console.log(myJson);
+        fetch("https://www.mbmheadquarters.com/admin/api/home.php", {
+          method: 'POST',
+          headers: new Headers({
+            'Content-Type': 'application/x-www-form-urlencoded', // <-- Specifying the Content-Type
+          }),
+          body: "id=" + myJson.id + "&token=" + myJson.token // <-- Post parameters
+        })
+            .then((response) => response.json())
+            .then((responseJson) => {
+              if (responseJson) {
+                var total_event = 0;
+                var total_upcoming = 0;
+                var total_past = 0;
+                let totalEvent = [];
+                let upcomingEvent = [];
+                let pastEvent = [];
+                if(responseJson.booking){
+                  for (var i = 0; i < responseJson.booking.length; i++) {
+
+                    var row = responseJson.booking[i];
+                    if (row.type == 'booking' && row.start_date != 'Invalid date') {
+                      let subject = row.subject;
+                      let start_date = row.start_date;
+                      let start_time = row.start_time;
+                      let startDate = moment(start_date.toString()).format();
+                      let end_time = row.end_time;
+                      let description = row.description;
+                      // let day = "2021-01-19T06:00:00.000Z";
+                      let style = { backgroundColor: '#' + ('#00000' + (Math.random() * (1 << 24) | 0).toString(16)).slice(-6) };
+                      totalEvent.push({
+                        subject: subject,
+                        start_date: start_date,
+                        start_time: start_time,
+                        startDate: startDate,
+                        end_time: end_time,
+                        description: description,
+                      });
+                      if(moment(start_date) > moment()){
+                        upcomingEvent.push({
+                          subject: subject,
+                          start_date: start_date,
+                          start_time: start_time,
+                          startDate: startDate,
+                          end_time: end_time,
+                          description: description,
+                        });
+                      }else{
+                        pastEvent.push({
+                          subject: subject,
+                          start_date: start_date,
+                          start_time: start_time,
+                          startDate: startDate,
+                          end_time: end_time,
+                          description: description,
+                        });
+                      }
+                    }
+                  }
+                }
+                total_event = totalEvent.length;
+                total_past = pastEvent.length;
+                total_upcoming = upcomingEvent.length
+              } else {
+                alert('Messaging not working temporarily.')
+              }
+            })
+            .catch((error) => {
+              console.error(error);
+            });
       }
     } catch (e) {
       console.log(e);
@@ -78,7 +148,6 @@ export default class Profile extends React.Component {
     )
   }
 
-
   renderSocial = () => {
     return (
       <Block flex style={styles.group}>
@@ -125,17 +194,38 @@ export default class Profile extends React.Component {
     )
   }
 
+  renderCards = () => {
+    return (
+        <Block flex style={styles.group}>
+          {/*<Text bold size={16} style={styles.title}>*/}
+          {/*    MBM Headquarters*/}
+          {/*</Text>*/}
+          <Block flex>
+            <Block style={{ paddingHorizontal: theme.SIZES.BASE }}>
+              <Overview product={overview[0]} horizontal />
+              <Block flex row>
+                <Overview product={overview[1]} style={{ marginRight: theme.SIZES.BASE }} />
+                <Overview product={overview[2]} />
+              </Block>
+              <Overview product={overview[3]} horizontal />
+            </Block>
+          </Block>
+        </Block>
+    )
+  }
+
   render() {
+    const { navigation } = this.props;
     return (
       <Block flex center style={{ marginBottom: 60 }}>
         <ScrollView
           style={styles.components}
           showsVerticalScrollIndicator={false}>
-          <Welcome user={this.state.user} />
-          {this.renderTabs()}
-          {this.renderButtons()}
-          {this.renderSocial()}
-
+          <Welcome user={this.state.user} navigation={navigation} />
+          {this.renderCards()}
+          {/*{this.renderButtons()}*/}
+          {/*{this.renderTabs()}*/}
+          {/*{this.renderSocial()}*/}
         </ScrollView>
       </Block>
     );

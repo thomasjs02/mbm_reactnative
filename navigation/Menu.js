@@ -22,12 +22,8 @@ function CustomDrawerContent({
     "Booking",
     "Services",
     "Settings",
-    "Components"
+    // "Components"
   ];
-    // console.log('start');
-    // console.log(user);
-    // console.log('state');
-    // console.log(state);
   return (
     <Block
       style={styles.container}
@@ -46,7 +42,7 @@ function CustomDrawerContent({
         </TouchableWithoutFeedback>
         <Block row>
           <Block middle style={styles.pro}>
-            <Text size={16} color="white">
+            <Text size={11} color="white">
               {profile.plan}
             </Text>
           </Block>

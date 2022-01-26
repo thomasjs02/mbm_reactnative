@@ -13,19 +13,19 @@ class Welcome extends React.Component {
 
   render() {
     // let user = this.props.user;
-    const { user } = this.props;
+    const { user, navigation } = this.props;
 
     return (
       <Block flex>
 
         <Block style={{ paddingHorizontal: theme.SIZES.BASE }}>
           <Block row={true} card flex style={[styles.product, styles.shadow]}>
-            <TouchableWithoutFeedback onPress={() => navigation.navigate('Item', { user_id: 43 })}>
+            <TouchableWithoutFeedback onPress={() => navigation.navigate('Services')}>
               <Block flex style={[styles.imageContainer, styles.shadow]}>
                 <Image source={require('./../assets/images/ios.png')} style='full' />
               </Block>
             </TouchableWithoutFeedback>
-            <TouchableWithoutFeedback onPress={() => navigation.navigate('Item', { user_id: 43 })}>
+            <TouchableWithoutFeedback onPress={() => navigation.navigate('Services')}>
               <Block flex space="between" style={styles.productDescription}>
                 <Text size={15} style={styles.productTitle}>Welcome {user.first_name}</Text>
                 <Text size={14}>MBM Headquarters</Text>
@@ -37,16 +37,16 @@ class Welcome extends React.Component {
 
         <Block center>
           <Block row style={styles.tabs}>
-            <Button shadowless style={[styles.tab, styles.divider]} onPress={() => navigation.navigate('Pro')}>
+            <Button shadowless style={[styles.tab, styles.divider]} onPress={() => navigation.navigate('Booking')}>
               <Block row middle>
-                <Icon name="grid" family="feather" style={{ paddingRight: 8 }} />
+                <Icon name="book-bookmark" family="foundation" style={{ paddingRight: 8 }} />
                 <Text size={16} style={styles.tabTitle}>Booking</Text>
               </Block>
             </Button>
-            <Button shadowless style={styles.tab} onPress={() => navigation.navigate('Pro')}>
+            <Button shadowless style={styles.tab} onPress={() => navigation.navigate('Services')}>
               <Block row middle>
-                <Icon size={16} name="camera-18" family="GalioExtra" style={{ paddingRight: 8 }} />
-                <Text size={16} style={styles.tabTitle}>Messages</Text>
+                <Icon size={16} name="package" family="feather" style={{ paddingRight: 8 }} />
+                <Text size={16} style={styles.tabTitle}>Services</Text>
               </Block>
             </Button>
           </Block>
