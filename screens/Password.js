@@ -24,9 +24,12 @@ const {width} = Dimensions.get('window');
 export default class Password extends React.Component {
 
     state = {
-        token: '',
+        app_token: '',
         user_id: '',
         email: '',
+        phone: '',
+        first_name: '',
+        last_name: '',
         borderColor: '#ffffff',
         accessColor: "'rgba(255, 255, 255, 1)'",
         password: '',
@@ -54,24 +57,8 @@ export default class Password extends React.Component {
         }
     }
 
-    Login = () => {
-
-    }
-
-    _submitCode = (code) => {
-        console.log(code);
-        this.setState({accessColor: "rgba(255, 0, 0, 1)"});
-        this.setState({codeRight: false});
-        this.refs.accessCode.clear();
-    }
-
     __submitEmail = async () => {
-        this.setState({incorrectEmail: true})
-        return 1;
-        let nav = this.props.navigation;
-        var token = this.state.token;
         var email = this.state.email;
-        var password = this.state.password;
         fetch("https://www.mbmheadquarters.com/admin/json/user-forgot.php", {
             method: 'POST',
             headers: new Headers({
@@ -79,9 +66,11 @@ export default class Password extends React.Component {
             }),
             body: "email=" + email // <-- Post parameters
         })
-            // .then((response) => response.json())
-            .then((response) => response.text())
+            .then((response) => response.json())
+            // .then((response) => response.text())
             .then((responseJson) => {
+                // var data_json = JSON.parse(responseJson);
+                console.log(responseJson);
                 if (responseJson == 'no-email' || responseJson == 'blank-email') {
                     this.setState({borderColor: '#ff0000'});
                     this.setState({incorrectPassword: true});
@@ -90,17 +79,90 @@ export default class Password extends React.Component {
                     var data_json = responseJson;
                     const id = data_json.id;
                     const email = data_json.email;
-                    this.setState({user_id: id, email: email, incorrectEmail: true})
+                    const app_token = data_json.app_token;
+                    const first_name = data_json.first_name;
+                    const last_name = data_json.last_name;
+                    const phone = data_json.phone;
+                    this.setState({
+                        phone: phone,
+                        first_name: first_name,
+                        last_name: last_name,
+                        app_token: app_token,
+                        user_id: id,
+                        email: email,
+                        incorrectEmail: true
+                    })
                 }
             })
             .catch((error) => {
-                // this.setState({ borderColor: '#ff0000' });
-                // this.setState({ incorrectPassword: true });
-                // alert('Incorrect login')
-                console.log('error');
+                // this.setState({borderColor: '#ff0000'});
+                // this.setState({incorrectPassword: true});
                 console.error(error);
             });
 
+    }
+
+    _submitCode = (code) => {
+        fetch("https://www.mbmheadquarters.com/admin/json/user-passcode.php", {
+            method: 'POST',
+            headers: new Headers({
+                'Content-Type': 'application/x-www-form-urlencoded', // <-- Specifying the Content-Type
+            }),
+            body: "id=" + this.state.user_id + "&passcode=" + code // <-- Post parameters
+        })
+            // .then((response) => response.json())
+            .then((response) => response.text())
+            .then((responseJson) => {
+                var passcode_success = parseInt(responseJson);
+                if (passcode_success) {
+                    var data_json = responseJson;
+                    this.setState({passcode: code, incorrectCode: false})
+                } else {
+                    this.setState({accessColor: "rgba(255, 0, 0, 1)"});
+                    this.setState({codeRight: false});
+                    this.refs.accessCode.clear();
+                }
+            })
+            .catch((error) => {
+                // this.setState({borderColor: '#ff0000'});
+                // this.setState({incorrectPassword: true});
+                console.error(error);
+            });
+    }
+
+    __changePasswordForm = () => {
+        let nav = this.props.navigation;
+        fetch("https://www.mbmheadquarters.com/admin/json/user-reset.php", {
+            method: 'POST',
+            headers: new Headers({
+                'Content-Type': 'application/x-www-form-urlencoded', // <-- Specifying the Content-Type
+            }),
+            body: "id=" + this.state.user_id + "&passcode=" + this.state.passcode + "&password=" + this.state.password // <-- Post parameters
+        })
+            // .then((response) => response.json())
+            .then((response) => response.text())
+            .then((responseJson) => {
+                if (this.state.password) {
+                    const id = this.state.user_id;
+                    const email = this.state.email;
+                    const token = this.state.app_token;
+                    // const password = this.state.password;
+                    const first_name = this.state.first_name;
+                    const last_name = this.state.last_name;
+                    const phone = this.state.phone;
+                    const credentials = {id, token, email, first_name, last_name, phone};
+                    this.storeData(credentials);
+                    nav.navigate('App');
+                } else {
+                    this.setState({accessColor: "rgba(255, 0, 0, 1)"});
+                    this.setState({codeRight: false});
+                }
+            })
+            .catch((error) => {
+                // this.setState({borderColor: '#ff0000'});
+                // this.setState({incorrectPassword: true});
+                console.error(error);
+            });
     }
 
     render() {
@@ -128,13 +190,21 @@ export default class Password extends React.Component {
                             </Block>
                         ) : (
                             <Block center style={{paddingBottom: 20, paddingTop: 20, color: '#ffffff'}}>
-                                {this.state.codeRight ? (
-                                    <Text p style={{color: '#ffffff'}}>
-                                        Access code sent to your email. Enter code.
-                                    </Text>
+                                {this.state.incorrectEmail ? (
+                                    <Block>
+                                        {this.state.codeRight ? (
+                                            <Text p style={{color: '#ffffff'}}>
+                                                Access code sent to your email. Enter code.
+                                            </Text>
+                                        ) : (
+                                            <Text p style={{color: '#ff0000'}}>
+                                                Access code is incorrect
+                                            </Text>
+                                        )}
+                                    </Block>
                                 ) : (
-                                    <Text p style={{color: '#ff0000'}}>
-                                        Access code is incorrect
+                                    <Text p style={{color: '#ffffff'}}>
+                                        Enter your email
                                     </Text>
                                 )}
                             </Block>
@@ -179,28 +249,6 @@ export default class Password extends React.Component {
                                                 value={this.state.password}
                                                 onChangeText={(password) => this.setState({password})}
                                                 placeholder={'New Password'}
-                                                secureTextEntry={true}
-                                                // placeholderTextColor='#ffffff'
-                                                width={200}
-                                                fontFamily='Baskerville'
-                                                fontSize={20}
-                                                height={44}
-                                                padding={10}
-                                                marginVertical={10}
-                                                borderWidth={1}
-                                                borderColor={this.state.borderColor}
-                                            />
-                                            <Input
-                                                borderless
-                                                color="white"
-                                                type="default"
-                                                autoCapitalize="none"
-                                                onFocus={this.handleFocus}
-                                                bgColor='transparent'
-                                                placeholderTextColor={materialTheme.COLORS.PLACEHOLDER}
-                                                value={this.state.confirm_password}
-                                                onChangeText={(confirm_password) => this.setState({confirm_password})}
-                                                placeholder={'Confirm Password'}
                                                 secureTextEntry={true}
                                                 // placeholderTextColor='#ffffff'
                                                 width={200}
