@@ -28,7 +28,7 @@ import index from "./src/js/index";
 // Before rendering any navigation stack
 import { enableScreens } from 'react-native-screens';
 import { addShop } from './src/js/actions';
-import * as SecureStore from 'expo-secure-store';
+// import * as SecureStore from 'expo-secure-store';
 // import { getData } from "./src/js/actions/index";
 
 enableScreens();
@@ -58,7 +58,6 @@ export default class App extends React.Component {
 
   state = {
     isLoadingComplete: false,
-    user:[]
   };
 
   render() {
@@ -85,22 +84,9 @@ export default class App extends React.Component {
   }
 
   _loadResourcesAsync = async () => {
-    try {
-      const credentials = await SecureStore.getItemAsync('kwagu_key');
-      // console.log('value of credentials: ', credentials);
-
-      if (credentials && !this.state.first_name) {
-        const myJson = JSON.parse(credentials);
-        this.setState({
-          user: myJson
-        });
-      }
       return Promise.all([
         ...cacheImages(assetImages),
         ]);
-    } catch (e) {
-      console.log(e);
-    }
   };
 
   _handleLoadingError = error => {
@@ -112,7 +98,7 @@ export default class App extends React.Component {
   _handleFinishLoading = () => {
       // store.dispatch( getData() );
       // this.setState({ isLoadingComplete: true });
-    fetch('http://www.mbmheadquarters.com/admin/json/shop-all.php', {
+    fetch('https://www.mbmheadquarters.com/admin/json/shop-all.php', {
       method: 'POST',
       headers: {
         Accept: 'application/json',

@@ -22,7 +22,7 @@ function CustomDrawerContent({
     "Booking",
     "Services",
     "Settings",
-    "Components"
+    // "Components"
   ];
   return (
     <Block
@@ -36,13 +36,13 @@ function CustomDrawerContent({
           <Block style={styles.profile}>
             <Image source={{ uri: profile.avatar }} style={styles.avatar} />
             <Text h5 color={"white"}>
-              {user.first_name + ' ' + user.last_name}
+              {/* {user.first_name + ' ' + user.last_name} */}
             </Text>
           </Block>
         </TouchableWithoutFeedback>
         <Block row>
           <Block middle style={styles.pro}>
-            <Text size={16} color="white">
+            <Text size={11} color="white">
               {profile.plan}
             </Text>
           </Block>

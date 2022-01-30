@@ -1,78 +1,107 @@
 import React from 'react';
 import { TouchableWithoutFeedback, View, TouchableOpacity, StyleSheet, TextInput, Dimensions, ScrollView, Image, ImageBackground, Platform } from 'react-native';
-import { Button, Block, Text, Icon, theme } from 'galio-framework';
-import { Select } from '../components/';
-import ModalDropdown from 'react-native-modal-dropdown';
-import * as SecureStore from 'expo-secure-store';
+import { Button, Block, Text, theme } from 'galio-framework';
+import Icon from './../components/Icon';
+import Welcome from './../components/Welcome';
 
-import { Images, materialTheme } from '../constants';
+import {Images, materialTheme, overview} from '../constants';
 import { HeaderHeight } from "../constants/utils";
-import DateTimePicker from '@react-native-community/datetimepicker';
-import CalendarPicker from 'react-native-calendar-picker';
+import * as SecureStore from 'expo-secure-store';
 import moment from "moment";
+import {Overview} from "../components";
 
 const { width, height } = Dimensions.get('screen');
 const thumbMeasure = (width - 48 - 32) / 3;
 
 export default class Profile extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      hourValue: 1,
-      selectedStartDate: null,
-      selectedTime: new Date(),
-      timePicker: true,
-    };
-    this.onDateChange = this.onDateChange.bind(this);
+
+  state = {
+    user: [],
   }
 
-  onDateChange(date) {
-    this.setState({
-      selectedStartDate: date,
-      timePicker: true,
-    });
-  }
-  onTimeChange = (event, selectedDate) => {
-    const currentDate = selectedDate || new Date();
-    this.setState({
-      selectedTime: selectedDate,
-    });
-    // const start_time = moment(currentDate).format('hh:mm A');
-    // const end_time = moment(currentDate).add(2, 'hours').format('hh:mm A');
-    // console.log(start_time + ' - ' + end_time);
-    // setShow(Platform.OS === 'ios');
-    // setDate(currentDate);
+  async componentDidMount() {
+    try {
+      const credentials = await SecureStore.getItemAsync('kwagu_key');
+      if (credentials) {
+        const myJson = JSON.parse(credentials);
+        this.setState({
+          user: myJson,
+        });
+        fetch("https://www.mbmheadquarters.com/admin/api/home.php", {
+          method: 'POST',
+          headers: new Headers({
+            'Content-Type': 'application/x-www-form-urlencoded', // <-- Specifying the Content-Type
+          }),
+          body: "id=" + myJson.id + "&token=" + myJson.token // <-- Post parameters
+        })
+            .then((response) => response.json())
+            .then((responseJson) => {
+              if (responseJson) {
+                var total_event = 0;
+                var total_upcoming = 0;
+                var total_past = 0;
+                let totalEvent = [];
+                let upcomingEvent = [];
+                let pastEvent = [];
+                if(responseJson.booking){
+                  for (var i = 0; i < responseJson.booking.length; i++) {
+
+                    var row = responseJson.booking[i];
+                    if (row.type == 'booking' && row.start_date != 'Invalid date') {
+                      let subject = row.subject;
+                      let start_date = row.start_date;
+                      let start_time = row.start_time;
+                      let startDate = moment(start_date.toString()).format();
+                      let end_time = row.end_time;
+                      let description = row.description;
+                      // let day = "2021-01-19T06:00:00.000Z";
+                      let style = { backgroundColor: '#' + ('#00000' + (Math.random() * (1 << 24) | 0).toString(16)).slice(-6) };
+                      totalEvent.push({
+                        subject: subject,
+                        start_date: start_date,
+                        start_time: start_time,
+                        startDate: startDate,
+                        end_time: end_time,
+                        description: description,
+                      });
+                      if(moment(start_date) > moment()){
+                        upcomingEvent.push({
+                          subject: subject,
+                          start_date: start_date,
+                          start_time: start_time,
+                          startDate: startDate,
+                          end_time: end_time,
+                          description: description,
+                        });
+                      }else{
+                        pastEvent.push({
+                          subject: subject,
+                          start_date: start_date,
+                          start_time: start_time,
+                          startDate: startDate,
+                          end_time: end_time,
+                          description: description,
+                        });
+                      }
+                    }
+                  }
+                }
+                total_event = totalEvent.length;
+                total_past = pastEvent.length;
+                total_upcoming = upcomingEvent.length
+              } else {
+                alert('Messaging not working temporarily.')
+              }
+            })
+            .catch((error) => {
+              console.error(error);
+            });
+      }
+    } catch (e) {
+      console.log(e);
+    }
   };
 
-  handleOnSelect = (index, value) => {
-    const { onSelect } = this.props;
-
-    this.setState({ hourValue: value });
-    onSelect && onSelect(index, value);
-  }
-
-  renderWelcome = (user) => {
-    return (
-      <Block flex>
-        <Block style={{ paddingHorizontal: theme.SIZES.BASE }}>
-          <Block row='horizontal' card flex style={[styles.product, styles.shadow]}>
-            <TouchableWithoutFeedback onPress={() => navigation.navigate('Item', { user_id: 43 })}>
-              <Block flex style={[styles.imageContainer, styles.shadow]}>
-                <Image source={require('./../assets/images/ios.png')} style='full' />
-              </Block>
-            </TouchableWithoutFeedback>
-            <TouchableWithoutFeedback onPress={() => navigation.navigate('Item', { user_id: 43 })}>
-              <Block flex space="between" style={styles.productDescription}>
-                <Text size={15} style={styles.productTitle}>Welcome {user.first_name}</Text>
-                <Text size={14}>MBM Headquarters</Text>
-                <Text size={12} muted={!materialTheme.COLORS.PRIMARY} color={materialTheme.COLORS.PRIMARY}>Professional Recording Studio</Text>
-              </Block>
-            </TouchableWithoutFeedback>
-          </Block>
-        </Block>
-      </Block>
-    )
-  }
 
   renderTabs = () => {
     return (
@@ -80,7 +109,7 @@ export default class Profile extends React.Component {
         <Block row space="between" style={{ padding: theme.SIZES.BASE, }}>
           <Block middle>
             <Text bold size={12} style={{ marginBottom: 8 }}>0</Text>
-            <Text muted size={12}>Sessions</Text>
+            <Text muted size={12}>Bookings</Text>
           </Block>
           <Block middle>
             <Text bold size={12} style={{ marginBottom: 8 }}>0</Text>
@@ -119,80 +148,15 @@ export default class Profile extends React.Component {
     )
   }
 
-  renderBooking = () => {
-    const { selectedStartDate } = this.state;
-    const startDate = selectedStartDate ? moment(selectedStartDate.toString()).format('MM/DD/YYYY') : '';
-    // const time = selectedStartDate ? moment(selectedStartDate.toString()).format("YYYY-MM-DD'T'HH:mm:ss") : '';
-    const date = new Date();
-    // console.log(selectedStartDate);
-
-    return (
-      <Block flex style={styles.group}>
-        <Block flex center>
-          <Text h4 style={{ marginBottom: theme.SIZES.BASE / 2 }}>Book Studio Time</Text>
-          <Text muted>Select a date on the calendar to book a session</Text>
-        </Block>
-        <Block style={styles.title}>
-          <CalendarPicker
-            onDateChange={this.onDateChange}
-          />
-        </Block>
-        {this.state.timePicker && (
-        <View>
-          <Block flex center>
-          <Text style={{ marginBottom: theme.SIZES.BASE / 2 }}>
-            Select the time you want to start your session on {startDate}
-          </Text>
-          </Block>
-          <DateTimePicker
-            testID="dateTimePicker"
-            value={this.state.selectedTime}
-            mode='time'
-            onChange={this.onTimeChange}
-            is24Hour={false}
-            display="default"
-          />
-          <Block row space="evenly">
-            <Block flex left style={{marginTop: 8, marginLeft: 15}}>
-              <Text style={{ marginBottom: theme.SIZES.BASE / 2 }}>
-                How many studio hours?
-              </Text>
-              <ModalDropdown
-                options={[1, 2, 3, 4, 5]}
-                style={[styles.qty, styles.shadow]}
-                onSelect={this.handleOnSelect}
-                dropdownStyle={styles.dropdown}
-                dropdownTextStyle={{paddingLeft:16, fontSize:12}}>
-                <Block flex row middle space="between">
-                  <Text size={12}>{this.state.hourValue}</Text>
-                  <Icon name="angle-down" family="font-awesome" size={11} />
-                </Block>
-              </ModalDropdown>
-            </Block>
-            <Block flex={1.25} right>
-              <Button onPress={this.__submitBookingForm}
-                center
-                shadowless
-                color={materialTheme.COLORS.PRIMARY}
-                textStyle={styles.optionsText}
-                style={[styles.optionsButton, styles.shadow]}>
-                  BOOK SESSION
-              </Button>
-            </Block>
-          </Block>
-        </View>
-        )}
-      </Block>
-    )
-  }
-
   renderSocial = () => {
     return (
       <Block flex style={styles.group}>
-        <Text bold size={16} style={styles.title}>
-          Connect With Us
-        </Text>
         <Block style={{ paddingHorizontal: theme.SIZES.BASE }}>
+          <Block center>
+            <Text bold size={16} style={styles.title}>
+              Social
+            </Text>
+          </Block>
           <Block row center space="between">
             <Block flex middle right>
               <Button
@@ -211,17 +175,17 @@ export default class Profile extends React.Component {
               <TouchableOpacity
                 style={styles.button}
               >
-              <Button
-                round
-                onlyIcon
-                shadowless
-                icon="youtube"
-                iconFamily="font-awesome"
-                iconColor={theme.COLORS.WHITE}
-                iconSize={theme.SIZES.BASE * 1.625}
-                color={theme.COLORS.YOUTUBE}
-                style={[styles.social, styles.shadow]}
-              />
+                <Button
+                  round
+                  onlyIcon
+                  shadowless
+                  icon="youtube"
+                  iconFamily="font-awesome"
+                  iconColor={theme.COLORS.WHITE}
+                  iconSize={theme.SIZES.BASE * 1.625}
+                  color={theme.COLORS.YOUTUBE}
+                  style={[styles.social, styles.shadow]}
+                />
               </TouchableOpacity>
             </Block>
           </Block>
@@ -230,55 +194,38 @@ export default class Profile extends React.Component {
     )
   }
 
-  __submitBookingForm = async () => {
-    let user = this.props.route.params.userData;
-    let hour = this.state.hourValue;
-    let booking_date = moment(this.state.selectedStartDate).format('MM/DD/YYYY');
-    let booking_time_start = moment(this.state.selectedTime).format('hh:mm A');
-    let booking_time_end = moment(this.state.selectedTime).add(hour, 'hours').format('hh:mm A');
-    let subject = 'Booking request from MBM app';
-    let description = 'Booking request from MBM app...';
-    var id = user.id
-    var token = user.token
-    console.log('token: '+token);
-    fetch("http://www.mbmheadquarters.com/admin/api/booking.php", {
-      method: 'POST',
-      headers: new Headers({
-                'Content-Type': 'application/x-www-form-urlencoded', // <-- Specifying the Content-Type
-        }),
-      body: "id="+id+"&token=" +token+"&subject=" +subject+"&start_date=" +booking_date+"&end_date=" +booking_date+"&start_time=" +booking_time_start+"&end_time="+booking_time_end+"&description="+description
-    })
-    .then((response) => response.text())
-    .then((responseJson) => {
-      if(responseJson){
-        alert("Your session has been booked!");
-        // this.setState({
-        //   loginModal: true,
-        //   isLoading: false,
-        // });
-      }else{
-        alert("Please login to your account to continue.")
-        const credentials = SecureStore.deleteItemAsync('kwagu_key');
-      }
-    })
-    .catch((error) => {
-        console.error(error);
-    });
-
-  }
-  render() {
-
-    let userData = this.props.route.params.userData;
+  renderCards = () => {
     return (
-      <Block flex center>
+        <Block flex style={styles.group}>
+          {/*<Text bold size={16} style={styles.title}>*/}
+          {/*    MBM Headquarters*/}
+          {/*</Text>*/}
+          <Block flex>
+            <Block style={{ paddingHorizontal: theme.SIZES.BASE }}>
+              <Overview product={overview[0]} horizontal />
+              <Block flex row>
+                <Overview product={overview[1]} style={{ marginRight: theme.SIZES.BASE }} />
+                <Overview product={overview[2]} />
+              </Block>
+              <Overview product={overview[3]} horizontal />
+            </Block>
+          </Block>
+        </Block>
+    )
+  }
+
+  render() {
+    const { navigation } = this.props;
+    return (
+      <Block flex center style={{ marginBottom: 60 }}>
         <ScrollView
           style={styles.components}
           showsVerticalScrollIndicator={false}>
-          {this.renderWelcome(userData)}
-          {this.renderBooking(userData)}
-          {/* {this.renderTabs()} */}
-          {/* {this.renderButtons()} */}
-          {/* {this.renderSocial()} */}
+          <Welcome user={this.state.user} navigation={navigation} />
+          {this.renderCards()}
+          {/*{this.renderButtons()}*/}
+          {/*{this.renderTabs()}*/}
+          {/*{this.renderSocial()}*/}
         </ScrollView>
       </Block>
     );
@@ -300,28 +247,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  profile: {
-    marginTop: Platform.OS === 'android' ? -HeaderHeight : 0,
-    marginBottom: -HeaderHeight * 2,
-  },
-  profileImage: {
-    width: width * 1.1,
-    height: 'auto',
-  },
-  profileContainer: {
-    width: width,
-    height: height / 2,
-  },
-  profileDetails: {
-    paddingTop: theme.SIZES.BASE * 4,
-    justifyContent: 'flex-end',
-    position: 'relative',
-  },
-  profileTexts: {
-    paddingHorizontal: theme.SIZES.BASE * 2,
-    paddingVertical: theme.SIZES.BASE * 2,
-    zIndex: 2
   },
   pro: {
     backgroundColor: materialTheme.COLORS.LABEL,
@@ -416,14 +341,6 @@ const styles = StyleSheet.create({
     marginHorizontal: theme.SIZES.BASE / 2,
     marginTop: -16,
   },
-  horizontalImage: {
-    height: 122,
-    width: 'auto',
-  },
-  fullImage: {
-    height: 215,
-    width: width - theme.SIZES.BASE * 3,
-  },
   shadow: {
     shadowColor: theme.COLORS.BLACK,
     shadowOffset: { width: 0, height: 2 },
@@ -431,21 +348,25 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     elevation: 2,
   },
-  qty: {
-    width: 100,
-    backgroundColor: '#DCDCDC',
-    paddingHorizontal: 16,
-    paddingTop: 10,
-    paddingBottom:9.5,
-    borderRadius: 3,
-    shadowColor: "rgba(0, 0, 0, 0.1)",
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-    shadowOpacity: 1,
+  divider: {
+    borderRightWidth: 0.3,
+    borderRightColor: theme.COLORS.MUTED,
   },
-  dropdown: {
-    marginTop: 8,
-    marginLeft: -16,
-    width: 100,
+  tabs: {
+    marginBottom: 24,
+    marginTop: 10,
+    elevation: 4,
+  },
+  tab: {
+    backgroundColor: theme.COLORS.TRANSPARENT,
+    width: width * 0.50,
+    borderRadius: 0,
+    borderWidth: 0,
+    height: 24,
+    elevation: 0,
+  },
+  tabTitle: {
+    lineHeight: 19,
+    fontWeight: '300'
   },
 });

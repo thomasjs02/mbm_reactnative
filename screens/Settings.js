@@ -33,7 +33,6 @@ export default class Settings extends React.Component {
   async componentDidMount(){
     try {
       const credentials = await SecureStore.getItemAsync('kwagu_key');
-      // console.log('value of credentials: ', credentials);
 
       if (credentials && !this.state.first_name) {
         const myJson = JSON.parse(credentials);
@@ -74,7 +73,7 @@ export default class Settings extends React.Component {
     this.setState({
       isLoading: true,
     });
-    fetch("http://www.mbmheadquarters.com/admin/api/user.php", {
+    fetch("https://www.mbmheadquarters.com/admin/api/user.php", {
       method: 'POST',
       headers: new Headers({
                 'Content-Type': 'application/x-www-form-urlencoded', // <-- Specifying the Content-Type
@@ -103,14 +102,6 @@ export default class Settings extends React.Component {
   }
 
   render() {
-    // this.read();
-    // console.log('test');
-    // console.log('email: ' + this.read().email);
-    // console.log(this.read);
-    // const email = userData.email;
-    // first_name = this.state.first_name;
-    // last_name = this.state.last_name;
-    // const phone = userData.phone;
 
     return (
       <Block flex style={styles.profile}>
@@ -213,7 +204,7 @@ export default class Settings extends React.Component {
               <TouchableOpacity
                 style={styles.button}
               >
-                <Text style={styles.buttonText} onPress={(loginModal) => this.setState({ loginModal: false })}> OK </Text>
+                <Text style={styles.buttonText} onPress={(loginModal) => this.setState({ loginModal: false })}> 💯 </Text>
               </TouchableOpacity>
       </FancyAlert>
       <LoadingIndicator visible={this.state.isLoading} />

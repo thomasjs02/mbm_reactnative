@@ -16,13 +16,11 @@ export default class Onboarding extends React.Component {
   }
 
   async componentDidMount(){
-    // console.log('test');
     try {
       const credentials = await SecureStore.getItemAsync('kwagu_key');
       // const credentials = await SecureStore.deleteItemAsync('kwagu_key');
-      // console.log('value of credentials: ', credentials);
 
-      if (credentials && !this.state.first_name) {
+      if (credentials && !this.state.user.first_name) {
         const myJson = JSON.parse(credentials);
         this.setState({
           isSignedIn: true,
@@ -62,7 +60,7 @@ export default class Onboarding extends React.Component {
             </Block>
               {this.state.isSignedIn ? (
                 <Block center>
-                    <Button shadowless style={styles.button} color={materialTheme.COLORS.BUTTON_COLOR} onPress={() => navigation.navigate('App', {user: this.state.user})}>
+                    <Button shadowless style={styles.button} color={materialTheme.COLORS.BUTTON_COLOR} onPress={() => navigation.navigate('App')}>
                       GET STARTED
                     </Button>
                 </Block>

@@ -10,7 +10,7 @@ const { height, width } = Dimensions.get('window');
 const iPhoneX = () => Platform.OS === 'ios' && (height === 812 || width === 812 || height === 896 || width === 896);
 
 const ChatButton = ({isWhite, style, navigation}) => (
-  <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('Pro')}>
+  <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('Contact')}>
     <Icon
       family="GalioExtra"
       size={16}
@@ -53,10 +53,10 @@ class Header extends React.Component {
   renderRight = () => {
     const { white, title, navigation } = this.props;
 
-    if (title === 'Title') {
+    if (title === 'Title' || title === 'Booking' || title === 'Services' || title === 'Settings') {
       return [
         <ChatButton key='chat-title' navigation={navigation} isWhite={white} />,
-        <BasketButton key='basket-title' navigation={navigation} isWhite={white} />
+        // <BasketButton key='basket-title' navigation={navigation} isWhite={white} />
       ]
     }
 
@@ -64,7 +64,6 @@ class Header extends React.Component {
       case 'Home':
         return ([
           <ChatButton key='chat-home' navigation={navigation} isWhite={white} />,
-          <BasketButton key='basket-home' navigation={navigation} isWhite={white} />
         ]);
       case 'Deals':
         return ([
@@ -125,16 +124,16 @@ class Header extends React.Component {
 
     return (
       <Block row style={styles.tabs}>
-        <Button shadowless style={[styles.tab, styles.divider]} onPress={() => navigation.navigate('Pro')}>
+        <Button shadowless style={[styles.tab, styles.divider]} onPress={() => navigation.navigate('Booking')}>
           <Block row middle>
             <Icon name="grid" family="feather" style={{ paddingRight: 8 }} />
-            <Text size={16} style={styles.tabTitle}>{tabTitleLeft || 'Categories'}</Text>
+            <Text size={16} style={styles.tabTitle}>{tabTitleLeft || 'Booking'}</Text>
           </Block>
         </Button>
-        <Button shadowless style={styles.tab} onPress={() => navigation.navigate('Pro')}>
+        <Button shadowless style={styles.tab} onPress={() => navigation.navigate('Services')}>
           <Block row middle>
             <Icon size={16} name="camera-18" family="GalioExtra" style={{ paddingRight: 8 }} />
-            <Text size={16} style={styles.tabTitle}>{tabTitleRight || 'Best Deals'}</Text>
+            <Text size={16} style={styles.tabTitle}>{tabTitleRight || 'Services'}</Text>
           </Block>
         </Button>
       </Block>

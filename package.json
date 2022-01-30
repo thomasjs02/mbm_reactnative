@@ -1,7 +1,7 @@
 {
-  "name": "rn-material-kit-free",
-  "version": "1.7.0",
-  "description": "Material Kit React Native. Coded by Creative Tim",
+  "name": "mbm-headquarters",
+  "version": "3.3",
+  "description": "Recording studio booking app.",
   "main": "node_modules/expo/AppEntry.js",
   "private": true,
   "scripts": {
@@ -12,13 +12,16 @@
     "eject": "expo eject",
     "test": "node ./node_modules/jest/bin/jest.js --watchAll"
   },
+  "resolutions": {
+    "@react-native-community/cli-debugger-ui": "4.7.0"
+  },
   "jest": {
     "preset": "jest-expo"
   },
   "dependencies": {
     "@kevinwolf/formal-native": "^0.1.3",
     "@react-native-async-storage/async-storage": "^1.13.2",
-    "@react-native-community/datetimepicker": "3.0.0",
+    "@react-native-community/datetimepicker": "5.1.0",
     "@react-native-community/masked-view": "0.1.10",
     "@react-navigation/compat": "~5.1.25",
     "@react-navigation/drawer": "~5.8.2",
@@ -34,15 +37,18 @@
     "react": "16.13.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-39.0.3.tar.gz",
     "react-native-calendar-picker": "^7.0.5",
+    "react-native-confirmation-code-input": "^1.0.4",
     "react-native-elements": "^3.0.0-alpha.1",
     "react-native-expo-fancy-alerts": "^2.1.0",
     "react-native-gesture-handler": "~1.7.0",
+    "react-native-gifted-chat": "^0.16.3",
     "react-native-masked-text": "^1.13.0",
     "react-native-modal-dropdown": "git+https://github.com/siemiatj/react-native-modal-dropdown.git",
     "react-native-reanimated": "~1.13.0",
     "react-native-safe-area-context": "3.1.4",
     "react-native-screens": "~2.10.1",
     "react-native-text-input-mask": "^2.0.0",
+    "react-native-webview": "^10.7.0",
     "react-time-picker": "^4.1.1",
     "yup": "^0.32.6"
   },

@@ -10,7 +10,7 @@ export default {
     MUTED: '#979797',
     INPUT: '#DCDCDC',
     ACTIVE: '#333333',
-    BUTTON_COLOR: '#cc0000',
+    BUTTON_COLOR: '#4B5320',
     PLACEHOLDER: '#9FA5AA',
     SWITCH_ON: '#9C26B0',
     SWITCH_OFF: '#D4D9DD',
