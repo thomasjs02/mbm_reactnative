@@ -4,7 +4,7 @@ export default {
     PRIMARY: '#919053',
     BUTTON_COLOR: '#4B5320',
     GRADIENT_START: '#4B5320',
-    GRADIENT_END: '#15002B',
+    GRADIENT_END: '#142608',
     LABEL: '#FE2472',
     INFO: '#00BCD4',
     ERROR: '#F44336',
