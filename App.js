@@ -28,6 +28,7 @@ import index from "./src/js/index";
 // Before rendering any navigation stack
 import { enableScreens } from 'react-native-screens';
 import { addShop } from './src/js/actions';
+import { dataUser } from './src/js/actions';
 // import * as SecureStore from 'expo-secure-store';
 // import { getData } from "./src/js/actions/index";
 
@@ -58,6 +59,7 @@ export default class App extends React.Component {
 
   state = {
     isLoadingComplete: false,
+    read_mail: false
   };
 
   render() {

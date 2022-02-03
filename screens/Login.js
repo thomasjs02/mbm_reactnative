@@ -16,6 +16,7 @@ import index from "./../src/js/index";
 import {LinearGradient} from 'expo-linear-gradient';
 import {materialTheme} from '../constants/';
 import {HeaderHeight} from "../constants/utils";
+import {addShop, dataUser} from "../src/js/actions";
 
 const {width} = Dimensions.get('window');
 // const { height, width } = Dimensions.get('screen');
@@ -63,12 +64,14 @@ export default class Login extends React.Component {
             .then((response) => response.json())
             .then((responseJson) => {
                 if (responseJson) {
+                    store.dispatch( dataUser(responseJson) );
                     const id = responseJson.id;
                     const token = responseJson.token;
                     const first_name = responseJson.first_name;
                     const last_name = responseJson.last_name;
                     const phone = responseJson.phone;
-                    const credentials = {id, token, email, password, first_name, last_name, phone};
+                    const read_mail = responseJson.read_mail;
+                    const credentials = {id, token, email, password, first_name, last_name, phone, read_mail};
                     this.storeData(credentials);
                     nav.navigate('App');
 
