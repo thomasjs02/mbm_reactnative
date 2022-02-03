@@ -20,7 +20,8 @@ import {HeaderHeight} from "../constants/utils";
 import * as SecureStore from 'expo-secure-store';
 import moment from "moment";
 import {Overview} from "../components";
-import {dataUser} from "../src/js/actions";
+import { readMail } from './../src/js/actions';
+import {addShop, dataUser} from "../src/js/actions";
 
 const {width, height} = Dimensions.get('screen');
 const thumbMeasure = (width - 48 - 32) / 3;
@@ -33,14 +34,7 @@ export default class Profile extends React.Component {
 
     async componentDidMount() {
         try {
-            store.dispatch(dataUser({
-                read_mail: 1
-            }));
-            // var readMail = store.getState().user[0].read_mail;
-            console.log(store.getState().user);
             const credentials = await SecureStore.getItemAsync('kwagu_key');
-            // console.log('credential');
-            // console.log(credentials);
             let nav = this.props.navigation;
 
             if (credentials) {
@@ -57,9 +51,6 @@ export default class Profile extends React.Component {
                 })
                     .then((response) => response.json())
                     .then((responseJson) => {
-                        // console.log('start');
-                        // console.log(myJson.id);
-                        // console.log(responseJson.read_mail);
                         var read_mail = responseJson.read_mail;
                         var id = myJson.id;
                         var token = myJson.token;
@@ -69,7 +60,7 @@ export default class Profile extends React.Component {
                         var phone = myJson.phone;
                         const credentials = {id, token, email, first_name, last_name, phone, read_mail};
                         this.storeData(credentials);
-                        // console.log(credentials);
+                        store.dispatch(readMail(read_mail));
                         if (responseJson) {
                             var total_event = 0;
                             var total_upcoming = 0;

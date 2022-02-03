@@ -97,7 +97,7 @@ export default class Login extends React.Component {
                 start={{x: 0, y: 0}}
                 end={{x: 0.25, y: 1.1}}
                 locations={[0.2, 1]}
-                colors={['#4B5320', '#15002B']}
+                colors={[materialTheme.COLORS.GRADIENT_START, materialTheme.COLORS.GRADIENT_END]}
                 style={[styles.signin, {flex: 1, paddingTop: theme.SIZES.BASE * 4}]}>
                 <Block center style={{marginTop: 100, marginBottom: 40}}>
                     <Text style={styles.titleText}>MBM</Text>

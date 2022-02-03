@@ -3,6 +3,7 @@ import { withNavigation } from '@react-navigation/compat';
 import { TouchableOpacity, StyleSheet, Platform, Dimensions } from 'react-native';
 import { Button, Block, NavBar, Input, Text, theme } from 'galio-framework';
 import index from "./../src/js/index";
+import { readMail } from './../src/js/actions';
 
 import Icon from './Icon';
 import materialTheme from '../constants/Theme';
@@ -11,21 +12,8 @@ import * as SecureStore from "expo-secure-store";
 const { height, width } = Dimensions.get('window');
 const iPhoneX = () => Platform.OS === 'ios' && (height === 812 || width === 812 || height === 896 || width === 896);
 
-// if(store.getState().user){
-//   var readMail = store.getState().user[0].read_mail;
-// }else{
-//   var readMail = false;
-// }
-// console.log(readMail);
-// var newData = store.getState().user;
-//
-// if(newData.length){
-//   readMail = true;
-// }else{
-//   readMail = store.getState().user[0].read_mail;
-// }
-// console.log(newData.length);
-var readMail = false;
+var mail_read = store.getState().readMail;
+
 const ChatButton = ({isWhite, style, navigation}) => (
 <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('Contact')}>
     <Icon
@@ -34,7 +22,7 @@ const ChatButton = ({isWhite, style, navigation}) => (
       name="chat-33"
       color={theme.COLORS[isWhite ? 'WHITE' : 'ICON']}
     />
-  {readMail ? (
+  {mail_read ? (
       <Block middle style={styles.notify} />
   ) :(
       <Block middle />
@@ -66,6 +54,11 @@ const SearchButton = ({isWhite, style, navigation}) => (
 );
 
 class Header extends React.Component {
+
+  state = {
+    read_mail: false
+  }
+
   handleLeftPress = () => {
     const { back, navigation } = this.props;
     return (back ? navigation.goBack() : navigation.openDrawer());

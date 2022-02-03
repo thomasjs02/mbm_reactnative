@@ -94,7 +94,7 @@ export default class Register extends React.Component {
             start={{ x: 0, y: 0 }}
             end={{ x: 0.25, y: 1.1 }}
             locations={[0.2, 1]}
-            colors={['#4B5320', '#15002B']}
+            colors={[materialTheme.COLORS.GRADIENT_START, materialTheme.COLORS.GRADIENT_END]}
             style={[styles.signup, { flex: 1, paddingTop: theme.SIZES.BASE * 4 }]}>
           <Block flex middle>
             <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "position"} enabled keyboardVerticalOffset={0}>

@@ -48,6 +48,7 @@ function ProfileStack(props) {
                             white
                             transparent
                             title="Profile"
+                            read_mail={0}
                             scene={scene}
                             navigation={navigation}
                         />
@@ -67,7 +68,7 @@ function SettingsStack(props) {
                 component={SettingsScreen}
                 options={{
                     header: ({navigation, scene}) => (
-                        <Header title="Settings" scene={scene} navigation={navigation}/>
+                        <Header read_mail={0} title="Settings" scene={scene} navigation={navigation}/>
                     )
                 }}
             />
@@ -83,7 +84,7 @@ function ComponentsStack(props) {
                 component={ComponentsScreen}
                 options={{
                     header: ({navigation, scene}) => (
-                        <Header title="Components" scene={scene} navigation={navigation}/>
+                        <Header read_mail={0} title="Components" scene={scene} navigation={navigation}/>
                     )
                 }}
             />
@@ -110,6 +111,10 @@ function LogoutStack(props) {
 }
 
 function HomeStack(props) {
+    // console.log('props');
+    // console.log(props);
+// var newData = store.getState().user;
+//     console.log(store.getState().user[0].read_mail);
     return (
         <Stack.Navigator mode="card" headerMode="screen">
             <Stack.Screen
@@ -133,6 +138,7 @@ function HomeStack(props) {
                 options={{
                     header: ({navigation, scene}) => (
                         <Header
+                            read_mail={0}
                             // search
                             // tabs
                             back={true}
@@ -157,6 +163,7 @@ function BookingStack(props) {
                 options={{
                     header: ({navigation, scene}) => (
                         <Header
+                            read_mail={0}
                             // search
                             // tabs
                             title="Booking"
@@ -179,6 +186,7 @@ function ContactStack(props) {
                 options={{
                     header: ({navigation, scene}) => (
                         <Header
+                            read_mail={0}
                             // search
                             // tabs
                             back={true}
@@ -202,6 +210,7 @@ function ServicesStack(props) {
                 options={{
                     header: ({navigation, scene}) => (
                         <Header
+                            read_mail={0}
                             title="Services"
                             scene={scene}
                             navigation={navigation}
@@ -216,6 +225,7 @@ function ServicesStack(props) {
                 options={{
                     header: ({navigation, scene}) => (
                         <Header
+                            read_mail={0}
                             // search
                             // tabs
                             back={true}
@@ -241,6 +251,7 @@ function ItemStack(props) {
                 options={{
                     header: ({navigation, scene}) => (
                         <Header
+                            read_mail={0}
                             // search
                             // tabs
                             back={true}
@@ -295,6 +306,11 @@ function RegisterStack(props) {
 
 function AppStack(props) {
 
+    // console.log('props');
+    // console.log(props);
+
+    // var title = props.route.params.product.title;
+    // console.log(props.route.params)
     return (
         <Drawer.Navigator
             style={{flex: 1}}
@@ -329,6 +345,7 @@ function AppStack(props) {
             <Drawer.Screen
                 name="Home"
                 component={HomeStack}
+                initialParams={{item: props}}
                 options={{
                     drawerIcon: ({focused}) => (
                         <Icon

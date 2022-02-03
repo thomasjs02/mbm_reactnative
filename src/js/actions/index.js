@@ -1,10 +1,14 @@
 import {
-  DATA_USER, ADD_SHOP, LOGGED_IN,
+  DATA_USER, ADD_SHOP, LOGGED_IN, READ_MAIL,
 } from './../constants/action-types';
 
 
 export function dataUser(payload) {
   return { type: DATA_USER, payload }
+};
+
+export function readMail(payload) {
+    return { type: READ_MAIL, payload }
 };
 
 export function addShop(payload) {
@@ -21,7 +25,7 @@ export function login() {
   }); //note this works asynchronously so, this may not be a good approach
   return {
       type: LOGGED_IN,
-      isLoggedIn, 
+      isLoggedIn,
       dateOfLastLogin
   };
 }
