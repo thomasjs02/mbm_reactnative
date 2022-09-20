@@ -4,12 +4,11 @@
     "description": "Professional recording studio booking app.",
     "slug": "mbm-headquarters",
     "privacy": "unlisted",
-    "sdkVersion": "39.0.0",
     "platforms": [
       "ios",
       "android"
     ],
-    "version": "3.3",
+    "version": "3.5",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "splash": {
@@ -26,6 +25,14 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.kwagu.mbmheadquarters"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "509d9ad2-da70-407e-82a3-e394253de5f9"
+      }
+    },
+    "android": {
+      "package": "com.kwagu.mbmheadquarters"
     }
   }
 }

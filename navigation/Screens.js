@@ -111,10 +111,6 @@ function LogoutStack(props) {
 }
 
 function HomeStack(props) {
-    // console.log('props');
-    // console.log(props);
-// var newData = store.getState().user;
-//     console.log(store.getState().user[0].read_mail);
     return (
         <Stack.Navigator mode="card" headerMode="screen">
             <Stack.Screen
@@ -306,11 +302,6 @@ function RegisterStack(props) {
 
 function AppStack(props) {
 
-    // console.log('props');
-    // console.log(props);
-
-    // var title = props.route.params.product.title;
-    // console.log(props.route.params)
     return (
         <Drawer.Navigator
             style={{flex: 1}}

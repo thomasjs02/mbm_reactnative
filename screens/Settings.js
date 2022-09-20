@@ -36,6 +36,7 @@ export default class Settings extends React.Component {
 
       if (credentials && !this.state.first_name) {
         const myJson = JSON.parse(credentials);
+        // const myJson = credentials;
         this.setState({
           id: myJson.id,
           token: myJson.token,

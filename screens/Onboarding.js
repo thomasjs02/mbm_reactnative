@@ -22,6 +22,7 @@ export default class Onboarding extends React.Component {
 
       if (credentials && !this.state.user.first_name) {
         const myJson = JSON.parse(credentials);
+        // const myJson = credentials;
         this.setState({
           isSignedIn: true,
           user: myJson

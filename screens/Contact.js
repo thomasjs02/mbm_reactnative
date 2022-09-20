@@ -18,6 +18,7 @@ export default class Example extends Component {
       if (credentials) {
         let nav = this.props.navigation;
         const myJson = JSON.parse(credentials);
+        // const myJson = credentials;
         this.setState({
           user: myJson,
         });
@@ -26,7 +27,7 @@ export default class Example extends Component {
           SecureStore.setItemAsync('kwagu_login', 1);
           nav.navigate('Login');
         }
-        fetch("https://www.mbmheadquarters.com/admin/api/mail.php", {
+        fetch("https://www.mbmheadquarters.com/admin/api/msg.php", {
           method: 'POST',
           headers: new Headers({
             'Content-Type': 'application/x-www-form-urlencoded', // <-- Specifying the Content-Type
@@ -87,6 +88,7 @@ export default class Example extends Component {
 
   onSend(messages = []) {
     var msg = messages[0].text;
+
     fetch("https://www.mbmheadquarters.com/admin/api/message.php", {
       method: 'POST',
       headers: new Headers({

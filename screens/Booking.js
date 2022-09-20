@@ -47,11 +47,10 @@ export default class Booking extends React.Component {
 
         try {
             const credentials = await SecureStore.getItemAsync('kwagu_key');
-            // console.log('booking');
-            // console.log(JSON.parse(credentials));
             if (credentials) {
                 let nav = this.props.navigation;
                 const myJson = JSON.parse(credentials);
+                // const myJson = credentials;
                 this.setState({
                     user: myJson,
                 });
@@ -100,12 +99,6 @@ export default class Booking extends React.Component {
                                 });
                             }
                         } else {
-                            // console.log("id=" + myJson.id + "&token=" + myJson.token);
-                            // alert('Messaging not working temporarily.')
-
-                            // SecureStore.deleteItemAsync('kwagu_key');
-                            // SecureStore.setItemAsync('kwagu_login', 1);
-                            // nav.navigate('Login');
                         }
                     })
                     .catch((error) => {
@@ -172,7 +165,6 @@ export default class Booking extends React.Component {
                 </Block>
                 <View>
                     <DateTimePicker
-                        testID="dateTimePicker"
                         value={this.state.selectedTime}
                         mode='time'
                         onChange={this.onTimeChange}

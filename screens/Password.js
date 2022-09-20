@@ -69,14 +69,11 @@ export default class Password extends React.Component {
             .then((response) => response.json())
             // .then((response) => response.text())
             .then((responseJson) => {
-                // var data_json = JSON.parse(responseJson);
-                console.log(responseJson);
                 if (responseJson == 'no-email' || responseJson == 'blank-email') {
                     this.setState({borderColor: '#ff0000'});
                     this.setState({incorrectPassword: true});
                 } else {
-                    // var data_json = JSON.parse(responseJson);
-                    var data_json = responseJson;
+                    var data_json = JSON.parse(responseJson);
                     const id = data_json.id;
                     const email = data_json.email;
                     const app_token = data_json.app_token;

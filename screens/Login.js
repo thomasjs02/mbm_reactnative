@@ -65,6 +65,7 @@ export default class Login extends React.Component {
             .then((responseJson) => {
                 if (responseJson) {
                     store.dispatch( dataUser(responseJson) );
+
                     const id = responseJson.id;
                     const token = responseJson.token;
                     const first_name = responseJson.first_name;
